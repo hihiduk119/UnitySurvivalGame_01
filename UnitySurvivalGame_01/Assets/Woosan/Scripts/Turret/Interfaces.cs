@@ -23,11 +23,20 @@ namespace WoosanStudio.Turret
         /// <value>The damage.</value>
         float Damage { get; set; }
         /// <summary>
+        /// 사거리
+        /// </summary>
+        /// <value>The range.</value>
+        float Range { get; set; }
+        /// <summary>
+        /// 공격속도
+        /// </summary>
+        /// <value>The atk spd.</value>
+        float AtkSpd { get; set; }
+        /// <summary>
         /// 터렛 레벨
         /// </summary>
         /// <value>The level.</value>
         int Level { get; set; }
-
         /// <summary>
         /// 데이터 세팅하는 부분
         /// </summary>
@@ -35,7 +44,7 @@ namespace WoosanStudio.Turret
         /// <param name="damage">Damage.</param>
         /// <param name="level">Level.</param>
         /// <param name="turretType">Turret type.</param>
-        void SetData(int hp,float damage,int level, TurretType turretType);
+        void SetData(int hp,float damage,float range,float atkSpd , int level, TurretType turretType);
     }
 
     /// <summary>
@@ -52,6 +61,8 @@ namespace WoosanStudio.Turret
         Transform Body { get; set; }
         //헤드부분 트랜스 폼
         Transform Head { get; set; }
+        //거리 설정하고 걸린 오브젝트 알려주는 녀석
+        Range Range { get; set; }
     }
 
     /// <summary>

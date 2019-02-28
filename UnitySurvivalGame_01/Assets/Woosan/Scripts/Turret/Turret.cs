@@ -1,7 +1,7 @@
-﻿using System.Collections;
+﻿
 using System.Collections.Generic;
 using UnityEngine;
-using System;
+
 
 namespace WoosanStudio.Turret
 {
@@ -11,6 +11,11 @@ namespace WoosanStudio.Turret
         LongRangeGun,           //스나이퍼          물리/관통
         //ExplosionGun,         //폭발탄           스플레쉬
         //LaserGun,             //레이저           레이저
+    }
+
+    public enum TargetPriority {
+        Closest,            //가까운것 부터
+        MaxHp,              //최대 체력이 가장 많은 녀석 부터
     }
 
     /// <summary>
@@ -54,6 +59,9 @@ namespace WoosanStudio.Turret
             this.view.Body = tfAllChildList[tfAllChildList.FindIndex(value => value.name.Equals("Body"))];
             //헤드 부분 뷰에 세팅
             this.view.Head = tfAllChildList[tfAllChildList.FindIndex(value => value.name.Equals("Head"))];
+            //사거리 세팅하는 부분
+            this.view.Range = tfAllChildList[tfAllChildList.FindIndex(value => value.name.Equals("Range"))].GetComponent<Range>();
+            this.view.Range.SetRange(model.Range);
         }
     }
 
@@ -65,17 +73,23 @@ namespace WoosanStudio.Turret
         TurretType turretType;
         int hp;
         float damage;
+        float range;
+        float atkSpd;
         int level;
 
         public TurretType TurretType { get { return turretType; } set { turretType = value; } }
         public int Hp { get { return hp; } set { hp = value; } }
         public float Damage { get { return damage; } set { damage = value; } }
+        public float Range { get { return range; } set { range = value; } }
+        public float AtkSpd { get { return atkSpd; } set { atkSpd = value; } }
         public int Level { get { return level; } set { level = value; } }
 
-        public void SetData(int hp, float damage, int level, TurretType turretType)
+        public void SetData(int hp, float damage, float range, float atkSpd, int level,TurretType turretType)
         {
             this.hp = hp;
             this.damage = damage;
+            this.range = range;
+            this.atkSpd = atkSpd;
             this.level = level;
             this.turretType = turretType;
         }
@@ -90,11 +104,13 @@ namespace WoosanStudio.Turret
         private GameObject typeObject;
         private Transform head;
         private Transform body;
+        private Range range;
 
         public GameObject RootObject { get { return rootObject; } set { rootObject = value; } }
         public GameObject TypeObject { get { return typeObject; } set { typeObject = value; } }
         public Transform Head { get { return head; } set { head = value; } }
         public Transform Body { get { return body; } set { body = value; } }
+        public Range Range { get { return range; } set { range = value; } }
     }
 
     /// <summary>

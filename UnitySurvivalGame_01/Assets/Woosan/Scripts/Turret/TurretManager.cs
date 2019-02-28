@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,8 +15,6 @@ namespace WoosanStudio.Turret
         public int maxTurret = 3;
         public List<GameObject> turretList = new List<GameObject>();
         public int turretIndex = 0;
-
-
 
         private void Awake()
         {
