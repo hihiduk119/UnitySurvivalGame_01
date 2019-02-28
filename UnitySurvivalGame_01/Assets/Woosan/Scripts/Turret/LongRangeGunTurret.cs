@@ -13,10 +13,10 @@ namespace WoosanStudio.Turret
 
         private void Awake()
         {
-            this.Alloc();
+            this.Create();
         }
 
-        public void Alloc(int level = 1)
+        public void Create(int level = 1)
         {
             base.model.SetData(this.hpTable[level], this.damageTable[level], level,TurretType.LongRangeGun);
         }

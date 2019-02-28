@@ -13,6 +13,9 @@ namespace WoosanStudio.Turret
         //LaserGun,             //레이저           레이저
     }
 
+    /// <summary>
+    /// 터렛의 모든 공용 기능을 가짐
+    /// </summary>
     public class Turret : MonoBehaviour
     {
         //MVC Pattern
@@ -20,51 +23,43 @@ namespace WoosanStudio.Turret
         public TurretView view = new TurretView();
         public TurretController controller = new TurretController();
 
-
+        #region 코루틴 람다용
         //IEnumerator WaitAndDo(float time, Action action)
         //{
         //    yield return new WaitForSeconds(time);
         //    action();
         //}
 
+        //StartCoroutine(
+        //    WaitAndDo(3f, () => {
+
+        //}));
+        # endregion
         /// <summary>
         /// 초기화하기
         /// </summary>
         public void Initialized()
         {
-            //StartCoroutine(
-            //    WaitAndDo(3f, () => {
-
-            //}));
-            Debug.Log(this.model.TurretType.ToString());
             //현재 트랜스 폼의 하위 모든 자식들을 tfAllChildList 에 찾아 넣음
             List<Transform> tfAllChildList = new List<Transform>(this.transform.GetComponentsInChildren<Transform>());
             //뷰의 최상위 오브젝트를 설정
-            this.view.obj = tfAllChildList[tfAllChildList.FindIndex(value => value.name.Equals(this.model.TurretType.ToString()))].gameObject;
+            this.view.TypeObject = tfAllChildList[tfAllChildList.FindIndex(value => value.name.Equals(this.model.TurretType.ToString()))].gameObject;
 
-            //그외 모든 터랫 디스에이블
-            Transform tfRotation = this.view.obj.transform.parent;
+            //그외 모든 터랫 비활성화
+            Transform tfRotation = this.view.TypeObject.transform.parent;
             for (int i = 0; i < tfRotation.childCount; i++) { tfRotation.GetChild(i).gameObject.SetActive(false); }
-            //해당 터랫 활성화
-            this.view.obj.SetActive(true);
+            //해당 터랫만 활성화
+            this.view.TypeObject.SetActive(true);
             //바디 부분 뷰에 세팅
-            this.view.body = tfAllChildList[tfAllChildList.FindIndex(value => value.name.Equals("Body"))];
+            this.view.Body = tfAllChildList[tfAllChildList.FindIndex(value => value.name.Equals("Body"))];
             //헤드 부분 뷰에 세팅
-            this.view.head = tfAllChildList[tfAllChildList.FindIndex(value => value.name.Equals("Head"))];
+            this.view.Head = tfAllChildList[tfAllChildList.FindIndex(value => value.name.Equals("Head"))];
         }
-
-        /// <summary>
-        /// 실제 메모리 할당
-        /// </summary>
-        //protected void Alloc()
-        //{
-        //    this.model = new TurretModel();
-        //    this.view = new TurretView();
-        //    this.controller = new TurretController();
-        //}
-
     }
 
+    /// <summary>
+    /// 모든 데이터만 가지고 있음
+    /// </summary>
     public class TurretModel : ITurretModel 
     {
         TurretType turretType;
@@ -86,13 +81,25 @@ namespace WoosanStudio.Turret
         }
     }
 
+    /// <summary>
+    /// 모든 보여주는 것에 관련된 Object를 가짐
+    /// </summary>
     public class TurretView : ITurretView 
     {
-        public GameObject obj;
-        public Transform head;
-        public Transform body;
+        private GameObject rootObject;
+        private GameObject typeObject;
+        private Transform head;
+        private Transform body;
+
+        public GameObject RootObject { get { return rootObject; } set { rootObject = value; } }
+        public GameObject TypeObject { get { return typeObject; } set { typeObject = value; } }
+        public Transform Head { get { return head; } set { head = value; } }
+        public Transform Body { get { return body; } set { body = value; } }
     }
 
+    /// <summary>
+    /// 모든 Action 관련 기능만 가짐
+    /// </summary>
     public class TurretController : ITurretController
     {
         #region ITurretController 
@@ -113,7 +120,7 @@ namespace WoosanStudio.Turret
         /// <summary>
         /// 데미지를 받음
         /// </summary>
-        public void TakeDamage()
+        public void TakeDamage(TurretModel turretModel)
         {
 
         }

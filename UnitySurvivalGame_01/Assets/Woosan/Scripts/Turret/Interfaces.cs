@@ -72,6 +72,6 @@ namespace WoosanStudio.Turret
         /// <summary>
         /// 데미지를 받음
         /// </summary>
-        void TakeDamage();
+        void TakeDamage(TurretModel turretModel);
     }
 }
