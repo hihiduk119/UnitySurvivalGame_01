@@ -5,11 +5,11 @@ using UnityEngine.Events;
 using Woosan.SurvivalGame;
 namespace UnityStandardAssets.Characters.ThirdPerson
 {
-    [RequireComponent(typeof (UnityEngine.AI.NavMeshAgent))]
+    //[RequireComponent(typeof (UnityEngine.AI.NavMeshAgent))]
     [RequireComponent(typeof (ThirdPersonCharacter))]
     public class AICharacterControl : MonoBehaviour
     {
-        public UnityEngine.AI.NavMeshAgent agent { get; private set; }             // the navmesh agent required for the path finding
+        UnityEngine.AI.NavMeshAgent agent;     // the navmesh agent required for the path finding
         public ThirdPersonCharacter character { get; private set; } // the character we are controlling
         public Transform target;                                    // target to aim for
         //타겟간의 거리 유지
@@ -17,6 +17,9 @@ namespace UnityStandardAssets.Characters.ThirdPerson
         Animator animator;
         AttackEvent attackEvent;
         ZombieKinds zombieKinds = ZombieKinds.WeakZombie;
+
+        //모든 좀비 데이터 가지고 있음
+        Zombie zombie;
 
         private void Start()
         {
@@ -30,15 +33,26 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             //시작하자 마자 현재 가지고 있는 에니메이터 세팅
             animator = this.GetComponent<Animator>();
             attackEvent = new AttackEvent();
+
+            //모든 좀비 데이터 가지고 있음
+            zombie = GetComponent<Zombie>();
         }
 
 
         private void Update()
         {
-            if (target != null)
-                agent.SetDestination(target.position);
+            //좀비가 죽었다면 실행 안함
+            if (zombie.model.isDead) return;
 
-            Debug.Log("re dis = " + agent.remainingDistance + "   stop dis = " + agent.stoppingDistance);
+            //타겟이 있어야 하고 Nav가 활성화 되어있어야 한다.
+            if (target != null && agent.enabled == true) {
+                //Debug.Log("상태 = " + agent.enabled);
+
+                agent.SetDestination(target.position);
+            }  else { return; }
+
+            //좀비 사거리 확인용
+            //Debug.Log("re dis = " + agent.remainingDistance + "   stop dis = " + agent.stoppingDistance);
 
             //이동
             if (agent.remainingDistance > agent.stoppingDistance) {

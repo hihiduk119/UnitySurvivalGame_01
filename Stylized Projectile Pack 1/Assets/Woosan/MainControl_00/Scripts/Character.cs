@@ -12,6 +12,7 @@ namespace Woosan.SurvivalGame
 {
     public class Character : MonoBehaviour
     {
+        public static Character instance;
         //좀비의 공격
         public UnityAction<ZombieKinds> attackAction;
         //사거리에 걸림
@@ -69,6 +70,11 @@ namespace Woosan.SurvivalGame
             action();
         }
 
+        private void Awake()
+        {
+            instance = this;
+        }
+
         private void Start()
         {
             //네비게이션 세팅
@@ -107,9 +113,34 @@ namespace Woosan.SurvivalGame
             Debug.Log("좀비에게 공격받음");
         }
 
+        /// <summary>
+        /// 좀비가 제거 됐을때 호출
+        /// </summary>
+        /// <param name="target">Target.</param>
+        public void TargetDead(Transform target) 
+        {
+            //남은 적이 없다면 사격 비활성화
+            if (zombies.Count == 0)
+            {
+                DontFire();
+            }
+
+            //죽은 좀비 찾아서 제거a
+            if (!zombies.Find(value => value.Equals(target.name)))
+            {
+                //있다면 제거
+                int index = zombies.FindIndex(value => value.name.Equals(target.name));
+                zombies.RemoveAt(index);
+            }
+        }
+
+        /// <summary>
+        /// 총 사거리 들어옴
+        /// </summary>
+        /// <param name="target">Target.</param>
         public void EnterGunRange(Transform target) {
-            //강제로 움직임 한번 실행
-            //LookAtTarget();
+            //죽은 넘인지 아닌지 부터 확인 => 죽은 넘이면
+            //if (target.GetComponent<Zombie>().model.isDead) { return; }
 
             //리스트에서 기존에 있는지 없는지 확인[없다]
             if (!zombies.Find(value => value.Equals(target.name))) 
@@ -118,7 +149,7 @@ namespace Woosan.SurvivalGame
                 zombies.Add(target);
             }
 
-            //Debug.Log("좀비에게 사거리 들어옴  count = " + zombies.Count);
+            Debug.Log("좀비에게 사거리 들어옴  count = " + zombies.Count);
 
             //사격중이 아니었다면
             if(!firing) {
@@ -126,11 +157,13 @@ namespace Woosan.SurvivalGame
                 corFire = StartCoroutine(CorFire());
                 //사격 활성화
                 firing = true;
-
-                //AudioManager.instance.RifleShot();
             } 
         }
 
+        /// <summary>
+        /// 총 사거리 벗어남
+        /// </summary>
+        /// <param name="target">Target.</param>
         public void ExitGunRange(Transform target) {
 
             //리스트에서 기존에 있는지 없는지 확인
@@ -143,11 +176,17 @@ namespace Woosan.SurvivalGame
             Debug.Log("좀비에게 사거리 벗어남  count = " + zombies.Count);
             //남은 적이 없다면 사격 비활성화
             if (zombies.Count == 0) {
-                //m_projectileActor.Stop();
-                if (corFire != null) { StopCoroutine(corFire); }
-                firing = false;
-                //AudioManager.instance.RifleShotStop();
+                DontFire();
             }
+        }
+
+        /// <summary>
+        /// 사격 중지
+        /// </summary>
+        void DontFire()
+        {
+            if (corFire != null) { StopCoroutine(corFire); }
+            firing = false;
         }
 
         IEnumerator CorFire() {
@@ -270,7 +309,7 @@ namespace Woosan.SurvivalGame
         }
 
 
-        void OnGUI()
+        /*void OnGUI()
         {
             if (GUI.Button(new Rect(0, 0, 200, 150), "사격"))
             {
@@ -282,6 +321,6 @@ namespace Woosan.SurvivalGame
             //{
 
             //}
-        }
+        }*/
     }
 }

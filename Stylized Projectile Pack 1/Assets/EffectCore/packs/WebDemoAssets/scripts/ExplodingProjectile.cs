@@ -83,6 +83,7 @@ public class ExplodingProjectile : MonoBehaviour
         Vector3 direction = transform.position - prevPos;
         Ray ray = new Ray(prevPos, direction);
         float dist = Vector3.Distance(transform.position, prevPos);
+
         if (Physics.Raycast(ray, out hit, dist))
         {
             transform.position = hit.point;
@@ -101,6 +102,10 @@ public class ExplodingProjectile : MonoBehaviour
                 Destroy(gameObject, 5);
             }
 
+            //edit ma zombie hit check
+            if(hit.transform.gameObject.layer == LayerMask.NameToLayer("zombie")) {
+                hit.transform.GetComponent<Woosan.SurvivalGame.Zombie>().Hit();
+            }
         }
     }
 
