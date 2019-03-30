@@ -46,7 +46,7 @@ namespace Woosan.SurvivalGame
 
         //발사체 관련
         public projectileActor m_projectileActor;
-        //현재 사격중인지 아닌지 여부a
+        //현재 사격중인지 아닌지 여부
         bool firing = false;
         bool isReloading = false;
         Coroutine corFire;
@@ -173,7 +173,7 @@ namespace Woosan.SurvivalGame
                 zombies.RemoveAt(zombies.FindIndex(value => value.name.Equals(target.name)));
             }
 
-            Debug.Log("좀비에게 사거리 벗어남  count = " + zombies.Count);
+            //Debug.Log("좀비에게 사거리 벗어남  count = " + zombies.Count);
             //남은 적이 없다면 사격 비활성화
             if (zombies.Count == 0) {
                 DontFire();
@@ -193,7 +193,7 @@ namespace Woosan.SurvivalGame
             WaitForSeconds delay = new WaitForSeconds(0.1f);
             yield return new WaitForSeconds(0.1f);
             while (true) {
-                //재장전 중이 아닐때만 사격a
+                //재장전 중이 아닐때만 사격
                 if(!isReloading) {
                     m_projectileActor.Fire();
                     //총기 화염 표현

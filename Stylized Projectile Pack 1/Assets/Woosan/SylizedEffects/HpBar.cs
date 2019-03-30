@@ -21,8 +21,8 @@ public class HpBar : MonoBehaviour
         //    Debug.Log("null");
         //Image[] aa = bar.GetComponentsInChildren<Image>();
         //Debug.Log(aa.Length);
-        
 
+        Reset();
     }
 
     private void Update()
@@ -39,6 +39,8 @@ public class HpBar : MonoBehaviour
         barFilled.color = Color.green;
         //값 초기화
         barFilled.fillAmount = 1f;
+
+        bar.gameObject.SetActive(false);
     }
 
     /// <summary>

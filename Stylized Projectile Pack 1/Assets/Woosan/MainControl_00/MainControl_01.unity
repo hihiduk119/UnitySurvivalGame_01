@@ -25386,7 +25386,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2139691285}
   m_LocalRotation: {x: 0.17101009, y: 0.8137977, z: -0.46984634, w: 0.29619816}
-  m_LocalPosition: {x: -2.84, y: 9.3, z: 3.53}
+  m_LocalPosition: {x: -2.5, y: 6.97, z: 2.82}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1330179915}
@@ -25626,7 +25626,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   oneShotClipArr:
-  - {fileID: 8300000, guid: d3da001f76e064739a076126d82bcfdd, type: 3}
+  - {fileID: 8300000, guid: 127c0c905264fe14398d83ba5e780fdb, type: 3}
   - {fileID: 8300000, guid: 659de125bedf64aa49cc111c28114000, type: 3}
   loopClipArr: []
   GunS: {fileID: 24500006, guid: 81481522cddda1b449f08fff3a87306e, type: 2}
