@@ -21,7 +21,7 @@ public class particleColorChangerMaster : MonoBehaviour {
     private IEnumerator Start()
     {
         yield return new WaitForSeconds(2f);
-        Destroy(gameObject);
+        //Destroy(gameObject);
     }
 
     void Update()

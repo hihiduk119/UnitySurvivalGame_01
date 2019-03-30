@@ -149,7 +149,7 @@ namespace Woosan.SurvivalGame
                 zombies.Add(target);
             }
 
-            Debug.Log("좀비에게 사거리 들어옴  count = " + zombies.Count);
+            //Debug.Log("좀비에게 사거리 들어옴  count = " + zombies.Count);
 
             //사격중이 아니었다면
             if(!firing) {
