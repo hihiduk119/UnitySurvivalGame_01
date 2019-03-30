@@ -22,7 +22,7 @@ public class HpBar : MonoBehaviour
         //Image[] aa = bar.GetComponentsInChildren<Image>();
         //Debug.Log(aa.Length);
 
-        Reset();
+        //Reset();
     }
 
     private void Update()

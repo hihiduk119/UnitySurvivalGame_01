@@ -170,7 +170,7 @@ public class AudioManager : MonoSingleton<AudioManager> {
 		}
 	}
 
-    void OnGUI()
+    /*void OnGUI()
     {
         if (GUI.Button(new Rect(0, 0, 200, 150), "auto"))
         {
@@ -186,5 +186,5 @@ public class AudioManager : MonoSingleton<AudioManager> {
         {
             GunShot(SoundOneshot.RifleOne_00);
         }
-    }
+    }*/
 }

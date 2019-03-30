@@ -71,6 +71,8 @@ public class projectileActor : MonoBehaviour {
     int rifleProjectilePoolCount = 0;
     readonly int rifleProjectilePoolMaxCount = 3;
 
+    //탄두 의해 좀비가 맞은 상흔 표현 [총알과 같이 카운트 공유]
+    List<GameObject> rifleImpactPool = new List<GameObject>();
 
     private void Awake()
     {
@@ -90,6 +92,26 @@ public class projectileActor : MonoBehaviour {
         {
             GameObject clone = Instantiate(bombList[bombType].shellPrefab, shellLocator.position, shellLocator.rotation) as GameObject;
             rifleShellPool.Add(clone);
+            clone.transform.parent = objectPool.transform;
+            clone.SetActive(false);
+        }
+
+        //재활용 탄두 생성해서 풀에 넣기
+        for (int index = 0; index < rifleProjectilePoolMaxCount; index++)
+        {
+            //리지드 바디 타입이라 변환해서 받음
+            GameObject clone = Instantiate(bombList[bombType].bombPrefab, spawnLocator.position, spawnLocator.rotation).gameObject;
+            rifleProjectilePool.Add(clone);
+            clone.transform.parent = objectPool.transform;
+            clone.SetActive(false);
+        }
+
+        //재활용 탄두에의해 좀비가 맞은 상흔 표현 생성해서 풀에 넣기
+        for (int index = 0; index < rifleProjectilePoolMaxCount; index++)
+        {
+            //입펙트 프리팹은 탄두에 ExplodingProjectile.cs에 있어서 거기서 가져옴
+            GameObject clone = Instantiate(bombList[bombType].bombPrefab.transform.GetComponent<ExplodingProjectile>().impactPrefab);
+            rifleImpactPool.Add(clone);
             clone.transform.parent = objectPool.transform;
             clone.SetActive(false);
         }
@@ -218,17 +240,43 @@ public class projectileActor : MonoBehaviour {
             shell.GetComponent<ParticleSystem>().Play();                    //에니메이션 Start
             rifleShellPoolCount++;
             if (rifleShellPoolMaxCount <= rifleShellPoolCount) { rifleShellPoolCount = 0; }
-
         }
         //edit end
 
         recoilAnimator.SetTrigger("recoil_trigger");
 
         Rigidbody rocketInstance;
-        rocketInstance = Instantiate(bombList[bombType].bombPrefab, spawnLocator.position,spawnLocator.rotation) as Rigidbody;
-        // Quaternion.Euler(0,90,0)
-        rocketInstance.AddForce(spawnLocator.forward * Random.Range(bombList[bombType].min, bombList[bombType].max));
 
+        //edit start
+        //old code start
+        //rocketInstance = Instantiate(bombList[bombType].bombPrefab, spawnLocator.position,spawnLocator.rotation) as Rigidbody;
+        // Quaternion.Euler(0,90,0)
+
+        //old code end
+        Transform projectile = rifleProjectilePool[rifleProjectilePoolCount].transform;
+
+        //리지드 바디 힘 초기화 
+        rocketInstance = projectile.GetComponent<Rigidbody>();
+        rocketInstance.velocity = Vector3.zero;
+        rocketInstance.angularVelocity = Vector3.zero;
+        rocketInstance.Sleep();
+        projectile.GetComponent<ExplodingProjectile>().previousPosition = spawnLocator.position;
+        //탄두에 의해 생성된 이펙트 넣어버림 [이때 프리팹에서 풀링된 임팩트로 교체 발생]
+        projectile.GetComponent<ExplodingProjectile>().impactPrefab = rifleImpactPool[rifleProjectilePoolCount];
+
+        projectile.gameObject.SetActive(true);//활성화
+        projectile.position = spawnLocator.position;//포지션 재조정
+        projectile.rotation = spawnLocator.rotation;//로테이션 재조정
+        projectile.GetComponent<ParticleSystem>().Simulate(0f, true, true);  //에니메이션 Reset
+        projectile.GetComponent<ParticleSystem>().Play();                    //에니메이션 Start
+        rifleProjectilePoolCount++;
+        if (rifleProjectilePoolMaxCount <= rifleProjectilePoolCount) { rifleProjectilePoolCount = 0; }
+
+        //edit end
+        rocketInstance.AddForce(spawnLocator.forward * Random.Range(bombList[bombType].min, bombList[bombType].max));
+        //프로젝타일에 임팩트 까지 같이 넣어버림
+
+        //여기는 샷건 부분 이쪽도 풀링작업 해야함
         if (bombList[bombType].shotgunBehavior)
         {
             for(int i = 0; i < bombList[bombType].shotgunPellets ;i++ )

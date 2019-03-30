@@ -87,7 +87,7 @@ namespace Woosan.SurvivalGame
             //리지드 바디에 포스 전달
             ragdollController.Die();
             //UI 비활성화
-            hpBar.Disable();
+            //hpBar.Disable();
             yield return new WaitForSeconds(4f);
             //공중에 떠서 사라지는 연출
             ragdollController.Recall();

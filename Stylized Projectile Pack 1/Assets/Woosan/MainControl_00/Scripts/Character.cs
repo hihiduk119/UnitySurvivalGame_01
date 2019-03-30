@@ -190,7 +190,8 @@ namespace Woosan.SurvivalGame
         }
 
         IEnumerator CorFire() {
-            WaitForSeconds delay = new WaitForSeconds(0.1f);
+            //사격 딜레이
+            WaitForSeconds delay = new WaitForSeconds(.075f);
             yield return new WaitForSeconds(0.1f);
             while (true) {
                 //재장전 중이 아닐때만 사격
