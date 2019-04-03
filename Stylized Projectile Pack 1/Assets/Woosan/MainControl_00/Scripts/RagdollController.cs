@@ -27,7 +27,7 @@ namespace Woosan.SurvivalGame
             //해당 리지드바지 가져오기
             //Rigidbody rd = rigidbodies[rigidbodies.FindIndex(value => value.gameObject.name.Equals("aa"))];
 
-            Debug.Log("count = " + rigidbodies.Count);
+            //Debug.Log("count = " + rigidbodies.Count);
 
             DisableRagdoll();
         }
@@ -72,9 +72,11 @@ namespace Woosan.SurvivalGame
         public void Die()
         {
             Vector3 forceDir = (transform.position - bullet.position).normalized;
-            float power = Random.Range(100,350);
-            forceDir = forceDir * power;
-            forceDir.y = Random.Range(400,800);
+            //float power = Random.Range(100,350);
+            //forceDir = forceDir * power;
+            forceDir.x = Random.Range(-200, 200);
+            forceDir.z = Random.Range(-200, 200);
+            forceDir.y = Random.Range(-100, 350);
 
             rigidbodies.ForEach(value => {
                 value.AddForce(forceDir, ForceMode.Force);
@@ -85,7 +87,7 @@ namespace Woosan.SurvivalGame
         {
             rigidbodies.ForEach(value => {
                 value.useGravity = false;
-                value.AddForce(new Vector3(0, Random.Range(200,400), 0), ForceMode.Acceleration);
+                value.AddForce(new Vector3(Random.Range(-50, 50), Random.Range(200,400), Random.Range(-50, 50)), ForceMode.Acceleration);
             });
         }
 

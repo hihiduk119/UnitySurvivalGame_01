@@ -212,7 +212,7 @@ public class projectileActor : MonoBehaviour {
         {
             CameraShakeCaller.ShakeCamera();
         }
-        Debug.Log("bombType = " + bombType.ToString() + " index = " + (int)bombType);
+        //Debug.Log("bombType = " + bombType.ToString() + " index = " + (int)bombType);
 
         //edit start
         //old code start
