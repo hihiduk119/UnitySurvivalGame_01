@@ -208,9 +208,10 @@ public class projectileActor : MonoBehaviour {
 
     public void Fire()
     {
+        //카메라 흔드는 부분
         if(CameraShake)
         {
-            CameraShakeCaller.ShakeCamera();
+            //CameraShakeCaller.ShakeCamera();
         }
         //Debug.Log("bombType = " + bombType.ToString() + " index = " + (int)bombType);
 

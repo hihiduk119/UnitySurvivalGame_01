@@ -63,6 +63,8 @@ namespace Woosan.SurvivalGame
         public List<Transform> laserPointers = new List<Transform>();
         //레이저 포인트
         public LineRenderer lineRenderer;
+        //임시 사용
+        Vector3 tmpPos;
 
         IEnumerator WaitAndDo(float time, Action action)
         {
@@ -151,13 +153,14 @@ namespace Woosan.SurvivalGame
 
             //Debug.Log("좀비에게 사거리 들어옴  count = " + zombies.Count);
 
+
             //사격중이 아니었다면
             if(!firing) {
                 if (corFire != null) { StopCoroutine(corFire); }
                 corFire = StartCoroutine(CorFire());
                 //사격 활성화
                 firing = true;
-            } 
+            }
         }
 
         /// <summary>
@@ -216,19 +219,21 @@ namespace Woosan.SurvivalGame
             }
         }
 
-        void FixedUpdate()
+        private void Update()
         {
+
             LookAtTarget();
             Move();
 
             //Test code
-            if(Input.GetKeyDown(KeyCode.R)) {
+            if (Input.GetKeyDown(KeyCode.R))
+            {
                 Reload();
             }
-
+            //레이저 포인트 용
             lineRenderer.SetPosition(0, laserPointers[0].position);
-            Vector3 pos = laserPointers[0].TransformPoint(new Vector3(0,0,10f));
-            lineRenderer.SetPosition(1, pos);
+            tmpPos = laserPointers[0].TransformPoint(new Vector3(0, 0, 10f));
+            lineRenderer.SetPosition(1, tmpPos);
         }
 
         void Reload()
