@@ -15,6 +15,10 @@ public enum SoundOneshot {
     RifleOne_Reload_00,
 }
 
+public enum SoundLoop {
+    LetsRock = 0,
+}
+
 
 public class AudioManager : MonoSingleton<AudioManager> {
     public AudioClip[] oneShotClipArr;
@@ -23,8 +27,12 @@ public class AudioManager : MonoSingleton<AudioManager> {
     public AudioMixerSnapshot GunS;
     public AudioMixerSnapshot GunE;
 
+    //건샷만을 위한 오디오 소스
     private AudioSource[] audioOneShotSourceArr = new AudioSource[4];
+    //나머지 모든 에픽트 오디오 소스
     private AudioSource[] audioDefaultSourceArr = new AudioSource[4];
+    //Music 전용 오디오 소스
+    private AudioSource musicAudioSource;
 
     //private AudioSource[] audioLoopSourceArr = new AudioSource[4];
 
@@ -38,8 +46,8 @@ public class AudioManager : MonoSingleton<AudioManager> {
     [Range(0, 1)]
     public float delay;
 
-    AudioSource auto;
-    AudioSource eco;
+    //AudioSource auto;
+    //AudioSource eco;
 
     private bool shootEnd = false;
 
@@ -58,13 +66,16 @@ public class AudioManager : MonoSingleton<AudioManager> {
             this.audioDefaultSourceArr[index] = this.gameObject.AddComponent<AudioSource>();
         }
 
+        //Music 사운드 추가
+        musicAudioSource = gameObject.AddComponent<AudioSource>();
+
         //for (int index = 0; index < audioLoopSourceArr.Length; index++)
         //{
         //    this.audioLoopSourceArr[index] = this.gameObject.AddComponent<AudioSource>();
         //}
 
-        auto = GetComponents<AudioSource>()[0];
-        eco = GetComponents<AudioSource>()[1];
+        //auto = GetComponents<AudioSource>()[0];
+        //eco = GetComponents<AudioSource>()[1];
     }
 
 
@@ -92,7 +103,7 @@ public class AudioManager : MonoSingleton<AudioManager> {
 
 	public void GunShot(SoundOneshot index) {
         //		Debug.Log("OneShot index = " + index);
-        return;
+        //return;
 		bool run = false;
 		for(int sourceIndex = 0; sourceIndex < audioOneShotSourceArr.Length;sourceIndex++ ) {
 			if(!audioOneShotSourceArr[sourceIndex].isPlaying) {
@@ -119,7 +130,7 @@ public class AudioManager : MonoSingleton<AudioManager> {
 
     public void OneShot(SoundOneshot index)
     {
-        return;
+        //return;
         //      Debug.Log("OneShot index = " + index);
         bool run = false;
         for (int sourceIndex = 0; sourceIndex < audioDefaultSourceArr.Length; sourceIndex++)
@@ -148,17 +159,45 @@ public class AudioManager : MonoSingleton<AudioManager> {
         }
     }
 
+    public void MusicLoop(SoundLoop index)
+    {
+        //return;
+        //      Debug.Log("OneShot index = " + index);
+
+        if (!musicAudioSource.isPlaying)
+        {
+            musicAudioSource.clip = loopClipArr[(int)index];
+            musicAudioSource.volume = 1f;
+            musicAudioSource.Play();
+            return;
+        }
+    }
+
+    /// <summary>
+    /// 슬로우 모션 발생시 사운드 컨트롤
+    /// </summary>
+    public void SlowMotion(float pitch) {
+        //float _pitch = 1f;
+
+        for (int index = 0; index < audioOneShotSourceArr.Length; index++) { audioOneShotSourceArr[index].pitch = pitch; }
+        for (int index = 0; index < audioDefaultSourceArr.Length; index++) { audioDefaultSourceArr[index].pitch = pitch; }
+
+        if (pitch <= 0.45f) { pitch = 0.45f; }
+        musicAudioSource.pitch = pitch;
+    }
+
     public void RifleShot()
     {
-        auto.Play();
+        //auto.Play();
 
         shootEnd = false;
         Lowpass();
     }
 
 
+
     public void RifleShotStop() {
-        eco.Play();
+        //eco.Play();
 
         shootEnd = true;
         Lowpass();

@@ -202,7 +202,7 @@ namespace Woosan.SurvivalGame
                     m_projectileActor.Fire();
                     //총기 화염 표현
                     this.objGunFireBlobLights.SetActive(true);
-                    StartCoroutine(WaitAndDo(0.05f, () => {
+                    StartCoroutine(WaitAndDo(0.07f, () => {
                         this.objGunFireBlobLights.SetActive(false);
                     }));
 
