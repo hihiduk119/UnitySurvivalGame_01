@@ -121,6 +121,14 @@ namespace Woosan.SurvivalGame
         /// <param name="target">Target.</param>
         public void TargetDead(Transform target) 
         {
+            //죽은 넘인지 아닌지 부터 확인 => 죽은 넘이면
+            //좀비가 생존하지 않았다면
+            if (!target.GetComponent<Enemy>().IsAlive)
+            {
+                firing = false;
+                DontFire();
+            }
+
             //남은 적이 없다면 사격 비활성화
             if (zombies.Count == 0)
             {
@@ -141,8 +149,6 @@ namespace Woosan.SurvivalGame
         /// </summary>
         /// <param name="target">Target.</param>
         public void EnterGunRange(Transform target) {
-            //죽은 넘인지 아닌지 부터 확인 => 죽은 넘이면
-            //if (target.GetComponent<Zombie>().model.isDead) { return; }
 
             //리스트에서 기존에 있는지 없는지 확인[없다]
             if (!zombies.Find(value => value.Equals(target.name))) 

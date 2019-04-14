@@ -31,7 +31,7 @@ namespace Woosan.SurvivalGame
 
             if (Time.timeScale >= 1f) { _recoverComplete = true; }
 
-            Debug.Log("Time = " + Time.timeScale);
+            //Debug.Log("Time = " + Time.timeScale);
             AudioManager.instance.SlowMotion(Time.timeScale);
             return _recoverComplete;
         }

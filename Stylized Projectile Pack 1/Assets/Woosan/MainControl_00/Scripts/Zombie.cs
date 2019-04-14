@@ -10,9 +10,10 @@ namespace Woosan.SurvivalGame
     /// 좀비를 컨트롤 한다.
     /// 좀비 체력 및 타격 트리깅 발생
     /// </summary>
-    public class Zombie : MonoBehaviour
+    public class Zombie : Enemy
     {
-        public class ZombieModel {
+        public class ZombieModel
+        {
             public int MaxHP = 100;
             public int HP = 100;
             public bool isDead = false;
@@ -29,10 +30,14 @@ namespace Woosan.SurvivalGame
         {
             hpBar = GetComponent<HpBar>();
             ragdollController = GetComponentInChildren<RagdollController>();
+            //좀비 생존
+            base.IsAlive = true;
         }
 
         public void Reset()
         {
+            //좀비 생존
+            base.IsAlive = true;
             //모델 데이터 초기화
             model = new ZombieModel();
             //UI 초기화
@@ -78,6 +83,8 @@ namespace Woosan.SurvivalGame
 
         IEnumerator CorDie() 
         {
+            //좀비 죽음
+            base.IsAlive = false;
             //현재 좀비의 정보 제공 => 좀비 리스트에서 제거하라고 지시a
             Character.instance.TargetDead(transform);
             //데이터상 데드로 변경

@@ -103,7 +103,7 @@ public class AudioManager : MonoSingleton<AudioManager> {
 
 	public void GunShot(SoundOneshot index) {
         //		Debug.Log("OneShot index = " + index);
-        //return;
+        return;
 		bool run = false;
 		for(int sourceIndex = 0; sourceIndex < audioOneShotSourceArr.Length;sourceIndex++ ) {
 			if(!audioOneShotSourceArr[sourceIndex].isPlaying) {
@@ -130,7 +130,7 @@ public class AudioManager : MonoSingleton<AudioManager> {
 
     public void OneShot(SoundOneshot index)
     {
-        //return;
+        return;
         //      Debug.Log("OneShot index = " + index);
         bool run = false;
         for (int sourceIndex = 0; sourceIndex < audioDefaultSourceArr.Length; sourceIndex++)
@@ -161,7 +161,7 @@ public class AudioManager : MonoSingleton<AudioManager> {
 
     public void MusicLoop(SoundLoop index)
     {
-        //return;
+        return;
         //      Debug.Log("OneShot index = " + index);
 
         if (!musicAudioSource.isPlaying)
