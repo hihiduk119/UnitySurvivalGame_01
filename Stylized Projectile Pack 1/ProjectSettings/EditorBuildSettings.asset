@@ -9,13 +9,13 @@ EditorBuildSettings:
     path: Assets/EffectCore/packs/StylizedExplosionPack1/scenes/StylizedExplosionPack1_ThrowBombs_mobile.unity
     guid: 0e0d8b65e7a635549a73338410d5b27d
   - enabled: 1
-    path: Assets/Woosan/MainControl_00/MainControl_01.unity
+    path: Assets/WoosanStudio/MainControl_00/MainControl_01.unity
     guid: a04d454d4f8034fbb84b08d01e160162
   - enabled: 0
     path: Assets/EffectCore/packs/StylizedProjectilePack1/scenes/stylizedProjectilePack
       1.unity
     guid: 5fb2d356d1160c84598f58425e2ee303
   - enabled: 0
-    path: Assets/Woosan/TestScene.unity
+    path: Assets/WoosanStudio/TestScene.unity
     guid: eedd4681a975b4398b674edb51a0d509
   m_configObjects: {}
