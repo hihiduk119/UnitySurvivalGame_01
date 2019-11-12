@@ -53,7 +53,7 @@ namespace Woosan.SurvivalGame
             //실제 체력 계산 부분
             int tmpHP = model.HP;
             bool die = false;
-            tmpHP -= 10;
+            tmpHP -= 1;
             //Debug.Log("tmpHP = " + tmpHP);
             //좀비 HP가 0이먄 죽게 만들기
             if(tmpHP <= 0) {

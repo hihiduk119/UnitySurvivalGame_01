@@ -29,8 +29,12 @@ namespace Woosan.SurvivalGame
 
         //네비메쉬 [실제 이동 담당]
         public NavMeshAgent navMeshAgent;
+
         //서드퍼슨 컨트롤 [ 애니메이션만 담당 , 회전도 담 당]
         public ThirdPersonCharacter thirdPersonCharacter;
+
+        //조이스틱 기준 오브젝트
+        public GameObject joystickPivot;
 
 
         float horizon;
@@ -65,6 +69,7 @@ namespace Woosan.SurvivalGame
         public LineRenderer lineRenderer;
         //임시 사용
         Vector3 tmpPos;
+        float distance = 3f;
 
         IEnumerator WaitAndDo(float time, Action action)
         {
@@ -225,7 +230,7 @@ namespace Woosan.SurvivalGame
             }
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
 
             LookAtTarget();
@@ -240,6 +245,11 @@ namespace Woosan.SurvivalGame
             lineRenderer.SetPosition(0, laserPointers[0].position);
             tmpPos = laserPointers[0].TransformPoint(new Vector3(0, 0, 10f));
             lineRenderer.SetPosition(1, tmpPos);
+
+            //네비 매쉬가 캐릭터 컨트롤러로 부터 떨어지는 것을 방지하기 위함
+            //네비 매쉬와 캐릭터 컨트롤러를 함께 쓸수가 없어서 트랜스 폼을 따로 했을때 충돌체에 부칮힐때 자식 오브젝트가 부모와 멀어지는 현상을
+            //개선하기 위한 코드
+            //transform.localPosition = Vector3.Lerp(transform.localPosition, Vector3.zero, Time.deltaTime * 10f);
         }
 
         void Reload()
@@ -274,9 +284,65 @@ namespace Woosan.SurvivalGame
                 desiredVelocity = vertical * Vector3.forward + horizon * Vector3.right;
             }
             //실제 이동을 담당
-            navMeshAgent.destination = transform.position + desiredVelocity;
+            //navMeshAgent.destination = transform.position + desiredVelocity;
+
+
+            //플레이어의 좌표와 왜곡 보정계산된 방향 가속도를 현재 좌표에 적용.
+            tmpPos = this.transform.localPosition;
+            tmpPos.z += desiredVelocity.z * distance;
+            tmpPos.x += desiredVelocity.x * distance;
+
+            //러프를 걸 타겟
+            joystickPivot.transform.localPosition = tmpPos;
+
+            //해당 지점으로 이동시키는 코드 => 조이스틱에 의 움직인 오브젝트임
+            navMeshAgent.SetDestination(joystickPivot.transform.position);
+            
+
             //조준 됐다면 타겟을 바라봐야함
-            if (aimed) {
+            if (aimed)
+            {
+                Vector3 look = zombies[0].position - transform.position;
+                look = look.normalized;
+
+                //비활성화라면 활성화
+                if (!aimMaker.gameObject.activeSelf)
+                {
+                    aimMaker.gameObject.SetActive(true);
+                }
+                //조준된 좀비에 에임 활성화
+                aimMaker.SetValue(zombies[0], ZombieKinds.WeakZombie);
+                //Debug.Log("look!");
+                //가상패드 인식이 없을때 그냥 서서 총쏘는 애니메이션
+                if (horizon == 0 && vertical == 0)
+                {
+                    thirdPersonCharacter.OnlyTurn(look, false, false);
+                    //Debug.Log("정지");
+                    return;
+                }
+                else
+                {//가상패드 인식이 있을때는 걸어다니며 슈팅a
+                    //애니메이션 움직임만 담당 [회전 포함]
+                    thirdPersonCharacter.Move(look, false, false);
+                    //Debug.Log("x = " + look.x +"  z = " + look.z);
+                    //navMeshAgent.speed = 4;
+                }
+            }
+            else
+            {
+                if (navMeshAgent.remainingDistance >= navMeshAgent.stoppingDistance)
+                {
+                    thirdPersonCharacter.Move(navMeshAgent.desiredVelocity, false, false);
+                }
+                else
+                {
+                    thirdPersonCharacter.Move(Vector3.zero, false, false);
+                }
+            }
+
+
+            //조준 됐다면 타겟을 바라봐야함
+            /*if (aimed) {
                 Vector3 look = zombies[0].position - transform.position;
                 look = look.normalized;
 
@@ -302,7 +368,7 @@ namespace Woosan.SurvivalGame
                 //애니메이션 움직임만 담당 [회전 포함]
                 thirdPersonCharacter.Move(desiredVelocity, false, false);
                 //navMeshAgent.speed = 5;
-            }
+            }*/
         }
 
         void LookAtTarget() 

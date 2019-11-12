@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Woosan.SurvivalGame
+namespace WoosanStudio.Common
 {
     public class SlowMotionTimeManager : MonoBehaviour
     {
@@ -49,11 +49,10 @@ namespace Woosan.SurvivalGame
 
         }
 
-        private void Update()
+        /*private void Update()
         {
             if(Input.GetKeyDown(KeyCode.Space)) {
                 DoSlowMotion();
-
             }
 
             if (Input.GetKeyDown(KeyCode.C))
@@ -64,6 +63,6 @@ namespace Woosan.SurvivalGame
             if(Input.GetKeyDown(KeyCode.P)) {
                 AudioManager.instance.MusicLoop(SoundLoop.LetsRock);
             }
-        }
+        }*/
     }
 }
