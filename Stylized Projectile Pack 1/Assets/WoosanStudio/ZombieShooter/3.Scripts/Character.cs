@@ -15,10 +15,6 @@ namespace Woosan.SurvivalGame
         public static Character instance;
         //좀비의 공격
         public UnityAction<ZombieKinds> attackAction;
-        //사거리에 걸림
-        public UnityAction<Transform> rangeEnterAction;
-        //사거리에 걸림에서 빠짐
-        public UnityAction<Transform> rangeExitAction;
 
         //사거리에 들어온 좀비 리스트
         List<Transform> zombies = new List<Transform>();
@@ -69,7 +65,7 @@ namespace Woosan.SurvivalGame
         public LineRenderer lineRenderer;
         //임시 사용
         Vector3 tmpPos;
-        float distance = 3f;
+        float distance = 0.25f;
 
         IEnumerator WaitAndDo(float time, Action action)
         {
@@ -87,14 +83,6 @@ namespace Woosan.SurvivalGame
             //네비게이션 세팅
             navMeshAgent.updateRotation = false;
 
-            //액션 설정
-            rangeEnterAction = new UnityAction<Transform>(EnterGunRange);
-            rangeExitAction = new UnityAction<Transform>(ExitGunRange);
-
-            //초기 이벤트 세팅
-            range.triggerEnterEvent.AddListener(rangeEnterAction);
-            range.triggerExitEvent.AddListener(rangeExitAction);
-
             //좀비의 액션에 대한 콜백메서드 세팅a
             attackAction = new UnityAction<ZombieKinds>(BeAttackedCallback);
 
@@ -105,7 +93,50 @@ namespace Woosan.SurvivalGame
 
             //재시작용 초기화
             Reset();
+
+            //StartCoroutine(CorMoveJoystickPivot());
         }
+
+        /*IEnumerator CorMoveJoystickPivot()
+        {
+            WaitForSeconds WFS = new WaitForSeconds(0.1f);
+            while(true)
+            {
+                //실제 조이스틱 값 가져오는 부분
+                horizon = UltimateJoystick.GetHorizontalAxis("Move");
+                vertical = UltimateJoystick.GetVerticalAxis("Move");
+
+                //Debug.Log("h = " + vertical + " v = " + vertical);
+
+                if (cam != null)
+                {
+                    //카메라 기준으로 조이스틱 방향성 바꿔줌
+                    camForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
+                    desiredVelocity = vertical * camForward + horizon * cam.right;
+                }
+                else
+                {
+                    //카메라가 없다면 기본 방향
+                    desiredVelocity = vertical * Vector3.forward + horizon * Vector3.right;
+                }
+                //실제 이동을 담당
+                //navMeshAgent.destination = transform.position + desiredVelocity;
+
+
+                //플레이어의 좌표와 왜곡 보정계산된 방향 가속도를 현재 좌표에 적용.
+                tmpPos = this.transform.localPosition;
+                tmpPos.z += desiredVelocity.z * distance;
+                tmpPos.x += desiredVelocity.x * distance;
+
+                //러프를 걸 타겟
+                joystickPivot.transform.localPosition = tmpPos;
+
+                //해당 지점으로 이동시키는 코드 => 조이스틱에 의 움직인 오브젝트임
+                navMeshAgent.SetDestination(joystickPivot.transform.position);
+
+                yield return WFS;
+            }
+        }*/
 
         public void Reset()
         {
@@ -150,7 +181,7 @@ namespace Woosan.SurvivalGame
         }
 
         /// <summary>
-        /// 총 사거리 들어옴
+        /// 몬스터가 총 사거리 들어옴
         /// </summary>
         /// <param name="target">Target.</param>
         public void EnterGunRange(Transform target) {
@@ -175,7 +206,7 @@ namespace Woosan.SurvivalGame
         }
 
         /// <summary>
-        /// 총 사거리 벗어남
+        /// 몬슨터가 총 사거리 벗어남
         /// </summary>
         /// <param name="target">Target.</param>
         public void ExitGunRange(Transform target) {
@@ -193,6 +224,56 @@ namespace Woosan.SurvivalGame
                 DontFire();
             }
         }
+
+        void  FireControl()
+        {
+            //현재 사격 중인 확인
+            if (!IsFire()) return;
+            //사격 가능 여부 확인
+            if (!FireAble()) return;
+            //사격 우선 순위 타겟 확인
+            GameObject target = FindPriorityTarget();
+            //우선 순위 타겟에 사격
+            Fire(target);
+        }
+
+        /// <summary>
+        /// 몬스터 사격 가능여부 확인
+        /// </summary>
+        bool FireAble()
+        {
+
+            return false;
+        }
+
+        /// <summary>
+        /// 사격 중인지 확인
+        /// </summary>
+        /// <returns></returns>
+        bool IsFire()
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// 최우선 타겟을 가져온다
+        /// </summary>
+        /// <returns></returns>
+        GameObject FindPriorityTarget()
+        {
+            return null;
+        }
+
+
+        /// <summary>
+        /// 몬스터 사격
+        /// </summary>
+        void Fire(GameObject target)
+        {
+
+        }
+
+
 
         /// <summary>
         /// 사격 중지
@@ -232,7 +313,7 @@ namespace Woosan.SurvivalGame
 
         private void FixedUpdate()
         {
-
+            //타겟을 바라봅니다.
             LookAtTarget();
             Move();
 
@@ -245,11 +326,6 @@ namespace Woosan.SurvivalGame
             lineRenderer.SetPosition(0, laserPointers[0].position);
             tmpPos = laserPointers[0].TransformPoint(new Vector3(0, 0, 10f));
             lineRenderer.SetPosition(1, tmpPos);
-
-            //네비 매쉬가 캐릭터 컨트롤러로 부터 떨어지는 것을 방지하기 위함
-            //네비 매쉬와 캐릭터 컨트롤러를 함께 쓸수가 없어서 트랜스 폼을 따로 했을때 충돌체에 부칮힐때 자식 오브젝트가 부모와 멀어지는 현상을
-            //개선하기 위한 코드
-            //transform.localPosition = Vector3.Lerp(transform.localPosition, Vector3.zero, Time.deltaTime * 10f);
         }
 
         void Reload()
@@ -296,8 +372,9 @@ namespace Woosan.SurvivalGame
             joystickPivot.transform.localPosition = tmpPos;
 
             //해당 지점으로 이동시키는 코드 => 조이스틱에 의 움직인 오브젝트임
-            navMeshAgent.SetDestination(joystickPivot.transform.position);
-            
+            //navMeshAgent.SetDestination(joystickPivot.transform.position);
+            navMeshAgent.destination = transform.position + desiredVelocity;
+
 
             //조준 됐다면 타겟을 바라봐야함
             if (aimed)
@@ -330,14 +407,15 @@ namespace Woosan.SurvivalGame
             }
             else
             {
-                if (navMeshAgent.remainingDistance >= navMeshAgent.stoppingDistance)
+                thirdPersonCharacter.Move(desiredVelocity, false, false);
+                /*if (navMeshAgent.remainingDistance >= navMeshAgent.stoppingDistance)
                 {
                     thirdPersonCharacter.Move(navMeshAgent.desiredVelocity, false, false);
                 }
                 else
                 {
                     thirdPersonCharacter.Move(Vector3.zero, false, false);
-                }
+                }*/
             }
 
 
@@ -374,6 +452,7 @@ namespace Woosan.SurvivalGame
         void LookAtTarget() 
         {
             //Debug.Log(zombies.Count);
+            //좀비가 있다면
             if(zombies.Count > 0) {
                 animator.SetBool("Aimed", true);
                 aimed = true;

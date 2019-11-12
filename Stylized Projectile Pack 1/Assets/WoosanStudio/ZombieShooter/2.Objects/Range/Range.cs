@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
-using UnityEngine.Events;
 
 using DG.Tweening;
 
 namespace Woosan.SurvivalGame
 {
+    
     public class Range : MonoBehaviour
     {
         //enter 이벤트
@@ -19,6 +19,7 @@ namespace Woosan.SurvivalGame
         //사거리 표시 부분
         private Transform view;
 
+        //캐쉬용
         Material material;
 
         private void Awake()
@@ -30,13 +31,14 @@ namespace Woosan.SurvivalGame
 
             material = view.GetComponent<MeshRenderer>().sharedMaterial;
             //깜빡임 트윈 시작
-            Blink();
+            //Blink();
         }
 
-        void Blink() 
-        {
-            material.DOFade(0.05f, "_TintColor", 1f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutQuad);
-        }
+        //해당 영역 깜빡이는 부분
+        //void Blink() 
+        //{
+        //    material.DOFade(0.05f, "_TintColor", 1f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutQuad);
+        //}
 
         //실제 View 에서 보이는 사거리 세팅
         public void SetRange(float radius)
