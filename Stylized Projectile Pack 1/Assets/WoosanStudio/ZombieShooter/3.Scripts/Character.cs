@@ -97,7 +97,8 @@ namespace Woosan.SurvivalGame
             //StartCoroutine(CorMoveJoystickPivot());
         }
 
-        /*IEnumerator CorMoveJoystickPivot()
+        /*
+        IEnumerator CorMoveJoystickPivot()
         {
             WaitForSeconds WFS = new WaitForSeconds(0.1f);
             while(true)
@@ -136,7 +137,8 @@ namespace Woosan.SurvivalGame
 
                 yield return WFS;
             }
-        }*/
+        }
+        */
 
         public void Reset()
         {
