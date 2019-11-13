@@ -116,7 +116,7 @@ public class ExplodingProjectile : MonoBehaviour
 
             //edit ma zombie hit check
             if(hit.transform.gameObject.layer == LayerMask.NameToLayer("zombie")) {
-                hit.transform.GetComponent<Woosan.SurvivalGame.Zombie>().Hit();
+                hit.transform.GetComponent<WoosanStudio.ZombieShooter.Zombie>().Hit();
             }
         }
     }

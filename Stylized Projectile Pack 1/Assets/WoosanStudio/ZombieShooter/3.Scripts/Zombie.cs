@@ -4,7 +4,7 @@ using UnityEngine;
 
 using UnityEngine.Events;
 
-namespace Woosan.SurvivalGame
+namespace WoosanStudio.ZombieShooter
 {
     /// <summary>
     /// 좀비를 컨트롤 한다.

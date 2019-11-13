@@ -2,7 +2,7 @@
 
 using DG.Tweening;
 
-namespace Woosan.SurvivalGame
+namespace WoosanStudio.ZombieShooter
 {
     
     public class Range : MonoBehaviour

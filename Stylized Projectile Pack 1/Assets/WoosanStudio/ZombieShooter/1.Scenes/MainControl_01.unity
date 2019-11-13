@@ -17581,6 +17581,7 @@ MonoBehaviour:
   navMeshAgent: {fileID: 1346651296}
   thirdPersonCharacter: {fileID: 1346651290}
   joystickPivot: {fileID: 1033676164}
+  fireController: {fileID: 0}
   aimMaker: {fileID: 1705964933}
   m_projectileActor: {fileID: 1101555363}
   objGunFireBlobLights: {fileID: 288778482}
@@ -17621,6 +17622,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f354be7ab50e0426bb247fcc4daf2ed0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 1346651289}
+  m_projectileActor: {fileID: 1101555363}
 --- !u!4 &1351739508 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: d80c7433031fdee44bf3910c4b046ce7,
@@ -68300,12 +68303,12 @@ PrefabInstance:
     - target: {fileID: 8799797494249483123, guid: 4048a2e6ebe3f4bfba6695beccac4856,
         type: 3}
       propertyPath: triggerEnterEvent.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8799797494249483123, guid: 4048a2e6ebe3f4bfba6695beccac4856,
         type: 3}
       propertyPath: triggerExitEvent.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8799797494249483123, guid: 4048a2e6ebe3f4bfba6695beccac4856,
         type: 3}
@@ -68355,6 +68358,56 @@ PrefabInstance:
     - target: {fileID: 8799797494249483123, guid: 4048a2e6ebe3f4bfba6695beccac4856,
         type: 3}
       propertyPath: triggerExitEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 8799797494249483123, guid: 4048a2e6ebe3f4bfba6695beccac4856,
+        type: 3}
+      propertyPath: triggerEnterEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8799797494249483123, guid: 4048a2e6ebe3f4bfba6695beccac4856,
+        type: 3}
+      propertyPath: triggerEnterEvent.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8799797494249483123, guid: 4048a2e6ebe3f4bfba6695beccac4856,
+        type: 3}
+      propertyPath: triggerExitEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8799797494249483123, guid: 4048a2e6ebe3f4bfba6695beccac4856,
+        type: 3}
+      propertyPath: triggerExitEvent.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8799797494249483123, guid: 4048a2e6ebe3f4bfba6695beccac4856,
+        type: 3}
+      propertyPath: triggerEnterEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1346651297}
+    - target: {fileID: 8799797494249483123, guid: 4048a2e6ebe3f4bfba6695beccac4856,
+        type: 3}
+      propertyPath: triggerEnterEvent.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: AddTarget
+      objectReference: {fileID: 0}
+    - target: {fileID: 8799797494249483123, guid: 4048a2e6ebe3f4bfba6695beccac4856,
+        type: 3}
+      propertyPath: triggerEnterEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 8799797494249483123, guid: 4048a2e6ebe3f4bfba6695beccac4856,
+        type: 3}
+      propertyPath: triggerExitEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1346651297}
+    - target: {fileID: 8799797494249483123, guid: 4048a2e6ebe3f4bfba6695beccac4856,
+        type: 3}
+      propertyPath: triggerExitEvent.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: RemoveTarget
+      objectReference: {fileID: 0}
+    - target: {fileID: 8799797494249483123, guid: 4048a2e6ebe3f4bfba6695beccac4856,
+        type: 3}
+      propertyPath: triggerExitEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 8799797495149705962, guid: 4048a2e6ebe3f4bfba6695beccac4856,

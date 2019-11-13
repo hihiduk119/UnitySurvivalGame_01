@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace Woosan.SurvivalGame
+namespace WoosanStudio.ZombieShooter
 {
     public class RagdollController : MonoBehaviour
     {

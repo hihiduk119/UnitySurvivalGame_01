@@ -8,7 +8,7 @@ using UnityEngine.AI;
 
 using System;
 
-namespace Woosan.SurvivalGame
+namespace WoosanStudio.ZombieShooter
 {
     public class Character : MonoBehaviour
     {
@@ -32,6 +32,8 @@ namespace Woosan.SurvivalGame
         //조이스틱 기준 오브젝트
         public GameObject joystickPivot;
 
+        //사격 컨트롤러
+        public FireController fireController;
 
         float horizon;
         float vertical;
@@ -96,49 +98,6 @@ namespace Woosan.SurvivalGame
 
             //StartCoroutine(CorMoveJoystickPivot());
         }
-
-        /*
-        IEnumerator CorMoveJoystickPivot()
-        {
-            WaitForSeconds WFS = new WaitForSeconds(0.1f);
-            while(true)
-            {
-                //실제 조이스틱 값 가져오는 부분
-                horizon = UltimateJoystick.GetHorizontalAxis("Move");
-                vertical = UltimateJoystick.GetVerticalAxis("Move");
-
-                //Debug.Log("h = " + vertical + " v = " + vertical);
-
-                if (cam != null)
-                {
-                    //카메라 기준으로 조이스틱 방향성 바꿔줌
-                    camForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
-                    desiredVelocity = vertical * camForward + horizon * cam.right;
-                }
-                else
-                {
-                    //카메라가 없다면 기본 방향
-                    desiredVelocity = vertical * Vector3.forward + horizon * Vector3.right;
-                }
-                //실제 이동을 담당
-                //navMeshAgent.destination = transform.position + desiredVelocity;
-
-
-                //플레이어의 좌표와 왜곡 보정계산된 방향 가속도를 현재 좌표에 적용.
-                tmpPos = this.transform.localPosition;
-                tmpPos.z += desiredVelocity.z * distance;
-                tmpPos.x += desiredVelocity.x * distance;
-
-                //러프를 걸 타겟
-                joystickPivot.transform.localPosition = tmpPos;
-
-                //해당 지점으로 이동시키는 코드 => 조이스틱에 의 움직인 오브젝트임
-                navMeshAgent.SetDestination(joystickPivot.transform.position);
-
-                yield return WFS;
-            }
-        }
-        */
 
         public void Reset()
         {
@@ -226,56 +185,6 @@ namespace Woosan.SurvivalGame
                 DontFire();
             }
         }
-
-        void  FireControl()
-        {
-            //현재 사격 중인 확인
-            if (!IsFire()) return;
-            //사격 가능 여부 확인
-            if (!FireAble()) return;
-            //사격 우선 순위 타겟 확인
-            GameObject target = FindPriorityTarget();
-            //우선 순위 타겟에 사격
-            Fire(target);
-        }
-
-        /// <summary>
-        /// 몬스터 사격 가능여부 확인
-        /// </summary>
-        bool FireAble()
-        {
-
-            return false;
-        }
-
-        /// <summary>
-        /// 사격 중인지 확인
-        /// </summary>
-        /// <returns></returns>
-        bool IsFire()
-        {
-            return false;
-        }
-
-        /// <summary>
-        /// 최우선 타겟을 가져온다
-        /// </summary>
-        /// <returns></returns>
-        GameObject FindPriorityTarget()
-        {
-            return null;
-        }
-
-
-        /// <summary>
-        /// 몬스터 사격
-        /// </summary>
-        void Fire(GameObject target)
-        {
-
-        }
-
-
 
         /// <summary>
         /// 사격 중지
@@ -410,45 +319,7 @@ namespace Woosan.SurvivalGame
             else
             {
                 thirdPersonCharacter.Move(desiredVelocity, false, false);
-                /*if (navMeshAgent.remainingDistance >= navMeshAgent.stoppingDistance)
-                {
-                    thirdPersonCharacter.Move(navMeshAgent.desiredVelocity, false, false);
-                }
-                else
-                {
-                    thirdPersonCharacter.Move(Vector3.zero, false, false);
-                }*/
             }
-
-
-            //조준 됐다면 타겟을 바라봐야함
-            /*if (aimed) {
-                Vector3 look = zombies[0].position - transform.position;
-                look = look.normalized;
-
-                //비활성화라면 활성화
-                if(!aimMaker.gameObject.activeSelf) {
-                    aimMaker.gameObject.SetActive(true);
-                }
-                //조준된 좀비에 에임 활성화
-                aimMaker.SetValue(zombies[0], ZombieKinds.WeakZombie);
-                //Debug.Log("look!");
-                //가상패드 인식이 없을때 그냥 서서 총쏘는 애니메이션
-                if(horizon  == 0 && vertical == 0) {
-                    thirdPersonCharacter.OnlyTurn(look, false, false);
-                    //Debug.Log("정지");
-                    return;
-                } else {//가상패드 인식이 있을때는 걸어다니며 슈팅a
-                    //애니메이션 움직임만 담당 [회전 포함]
-                    thirdPersonCharacter.Move(look, false, false);
-                    //Debug.Log("x = " + look.x +"  z = " + look.z);
-                    //navMeshAgent.speed = 4;
-                }
-            } else {
-                //애니메이션 움직임만 담당 [회전 포함]
-                thirdPersonCharacter.Move(desiredVelocity, false, false);
-                //navMeshAgent.speed = 5;
-            }*/
         }
 
         void LookAtTarget() 
@@ -467,6 +338,49 @@ namespace Woosan.SurvivalGame
                 aimMaker.gameObject.SetActive(false);
             }
         }
+
+        /*
+        IEnumerator CorMoveJoystickPivot()
+        {
+            WaitForSeconds WFS = new WaitForSeconds(0.1f);
+            while(true)
+            {
+                //실제 조이스틱 값 가져오는 부분
+                horizon = UltimateJoystick.GetHorizontalAxis("Move");
+                vertical = UltimateJoystick.GetVerticalAxis("Move");
+
+                //Debug.Log("h = " + vertical + " v = " + vertical);
+
+                if (cam != null)
+                {
+                    //카메라 기준으로 조이스틱 방향성 바꿔줌
+                    camForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
+                    desiredVelocity = vertical * camForward + horizon * cam.right;
+                }
+                else
+                {
+                    //카메라가 없다면 기본 방향
+                    desiredVelocity = vertical * Vector3.forward + horizon * Vector3.right;
+                }
+                //실제 이동을 담당
+                //navMeshAgent.destination = transform.position + desiredVelocity;
+
+
+                //플레이어의 좌표와 왜곡 보정계산된 방향 가속도를 현재 좌표에 적용.
+                tmpPos = this.transform.localPosition;
+                tmpPos.z += desiredVelocity.z * distance;
+                tmpPos.x += desiredVelocity.x * distance;
+
+                //러프를 걸 타겟
+                joystickPivot.transform.localPosition = tmpPos;
+
+                //해당 지점으로 이동시키는 코드 => 조이스틱에 의 움직인 오브젝트임
+                navMeshAgent.SetDestination(joystickPivot.transform.position);
+
+                yield return WFS;
+            }
+        }
+        */
 
 
         /*void OnGUI()

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Woosan.SurvivalGame
+namespace WoosanStudio.ZombieShooter
 {
     public abstract class Enemy : MonoBehaviour
     {

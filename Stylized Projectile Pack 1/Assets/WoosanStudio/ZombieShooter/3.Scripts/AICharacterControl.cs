@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 using UnityEngine.Events;
-using Woosan.SurvivalGame;
+using WoosanStudio.ZombieShooter;
 namespace UnityStandardAssets.Characters.ThirdPerson
 {
     //[RequireComponent(typeof (UnityEngine.AI.NavMeshAgent))]
