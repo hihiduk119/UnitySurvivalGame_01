@@ -104,7 +104,7 @@ namespace WoosanStudio.ZombieShooter
             //시작시 에임 마커 디스에이블
             aimMaker.gameObject.SetActive(false);
             //사격중지
-            m_projectileActor.Stop();
+            //m_projectileActor.Stop();
         }
 
         public void BeAttackedCallback(ZombieKinds zombieKinds)

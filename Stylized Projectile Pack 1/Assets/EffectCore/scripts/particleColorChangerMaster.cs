@@ -18,10 +18,9 @@ public class particleColorChangerMaster : MonoBehaviour {
     public bool applyChanges = false;
     public bool Keep_applyChanges = false;
 
-    private IEnumerator Start()
+    void Start()
     {
-        yield return new WaitForSeconds(2f);
-        //Destroy(gameObject);
+
     }
 
     void Update()

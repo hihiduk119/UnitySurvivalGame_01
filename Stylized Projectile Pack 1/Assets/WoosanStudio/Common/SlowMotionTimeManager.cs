@@ -10,59 +10,44 @@ namespace WoosanStudio.Common
         public float slowdownFactor { get; private set; } = 0.1f;
         public float recoverFactor{ get; private set; } = 1.5f;
 
+        //인터페이스로 만든 오디
+        public new WoosanStudio.Common.Audio.IAudio audio;
+
         /// <summary>
         /// 슬로우 모션을 발생 시키는 부분
         /// </summary>
         void DoSlowMotion() {
             Time.timeScale = slowdownFactor;
-            Time.fixedDeltaTime = Time.timeScale * 0.02f;
+            //Time.fixedDeltaTime 는 0.05시간에 한번씩 계산하기 때문에 변환 time scale 변경시 같이 해줘야함
+            //안그러면 오브젝트가 끊기는 것처럼 날아감 보임
+            Time.fixedDeltaTime = Time.timeScale * 0.05f;
 
-            AudioManager.instance.SlowMotion(Time.timeScale);
+            //느린 사운드 적용 부분 [둘중에 하나 써야]
+            //인터페이스로 구현
+            //audio.Pitch(Time.timeScale);
+            //실제 호출
+            //AudioManager.instance.SlowMotion(Time.timeScale);
         }
 
-        /// <summary>
-        /// 슬로우 모션 회복하는 메서드.
-        /// </summary>
-        /// <returns><c>true</c>, if recover motion was done, <c>false</c> otherwise.</returns>
-        bool DoRecoverMotion() {
-            bool _recoverComplete = false;
-            Time.timeScale += (1f / recoverFactor) * Time.unscaledDeltaTime;
-            Time.timeScale = Mathf.Clamp(Time.timeScale, 0f, 1f);
-
-            if (Time.timeScale >= 1f) { _recoverComplete = true; }
-
-            //Debug.Log("Time = " + Time.timeScale);
-            AudioManager.instance.SlowMotion(Time.timeScale);
-            return _recoverComplete;
-        }
-
-        /// <summary>
-        /// 슬로우 모션 회복하는 메서드. 코루틴
-        /// </summary>
-        /// <returns>The do reciver motion.</returns>
-        IEnumerator CorDoReciverMotion()
-        {
-            WaitForEndOfFrame waitFrame = new WaitForEndOfFrame();
-            while(!DoRecoverMotion()) {
-                yield return waitFrame;
-            }
-
-        }
-
-        /*private void Update()
+        private void Update()
         {
             if(Input.GetKeyDown(KeyCode.Space)) {
+                //씬안의 모든 리지드 바디 가져와서 벨로시티 저장
                 DoSlowMotion();
             }
 
             if (Input.GetKeyDown(KeyCode.C))
             {
-                StartCoroutine(CorDoReciverMotion());
+                Time.timeScale = 1f;
+                //Time.fixedDeltaTime 는 0.05시간에 한번씩 계산하기 때문에 변환 time scale 변경시 같이 해줘야함
+                //안그러면 오브젝트가 끊기는 것처럼 날아감 보임
+                Time.fixedDeltaTime = Time.timeScale * 0.05f;
+                //Debug.Log("[3] time = " + Time.timeScale + "   Time.fixedDeltaTime = " + Time.fixedDeltaTime);
             }
 
             if(Input.GetKeyDown(KeyCode.P)) {
                 AudioManager.instance.MusicLoop(SoundLoop.LetsRock);
             }
-        }*/
+        }
     }
 }

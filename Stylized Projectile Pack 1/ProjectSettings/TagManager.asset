@@ -7,6 +7,10 @@ TagManager:
   - Target
   - World
   - FX
+  - Projectile
+  - Impact
+  - Muzzle
+  - Shell
   layers:
   - Default
   - TransparentFX

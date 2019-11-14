@@ -5,8 +5,10 @@ using UnityEngine.UI;
 
 public class projectileActor : MonoBehaviour {
 
-    public Transform spawnLocator; 
+    public Transform spawnLocator;
+    [Header("[총기 화염 부분]")]
     public Transform spawnLocatorMuzzleFlare;
+    [Header ("[탄피 배출부분]")]
     public Transform shellLocator;
     public Animator recoilAnimator;
 
@@ -54,85 +56,60 @@ public class projectileActor : MonoBehaviour {
     public bool MajorRotate = false;
     int seq = 0;
 
-    //풀의 최상위 루트
-    public GameObject objectPool;
-    //총구화염 담아두는 풀 만들기
-    List<GameObject> rifleFlarePool = new List<GameObject>();
-    int rifleFlarePoolCount = 0;
-    readonly int rifleFlarePoolMaxCount = 1;
+    //추가한 부분
+    //생성된 탄환 루트
+    public static Transform Projectile;
+    public static Transform Muzzle;
+    public static Transform Shell;
 
-    //탄피 담아두는 풀 만들기
-    List<GameObject> rifleShellPool = new List<GameObject>();
-    int rifleShellPoolCount = 0;
-    readonly int rifleShellPoolMaxCount = 15;
+    //타임 스캐일 변환시 리지드 바디에 속도 값이 이상하게 발생하는 현상을 체크하기 위한 테스트 리스트
+    //[Test 001]
+    public List<Transform> projectiles = new List<Transform>();
 
-    //탄두 담아두는 풀 만들기
-    List<GameObject> rifleProjectilePool = new List<GameObject>();
-    int rifleProjectilePoolCount = 0;
-    readonly int rifleProjectilePoolMaxCount = 3;
-
-    //탄두 의해 좀비가 맞은 상흔 표현 [총알과 같이 카운트 공유]
-    List<GameObject> rifleImpactPool = new List<GameObject>();
-
+    //캐슁용
+    private GameObject clone;
+    Rigidbody rocketInstance;
     private void Awake()
     {
-        if (objectPool == null) { return; }
-
-        //재활용 총구 화염 생성해서 풀에 넣기
-        for (int index = 0; index < rifleFlarePoolMaxCount; index++)
+        //자동으로 하이얼아키에서 해당 오브젝트 찾기
+        //한번한번만 실행되게
+        if (projectileActor.Projectile == null)
         {
-            GameObject clone = Instantiate(bombList[bombType].muzzleflare, spawnLocatorMuzzleFlare.position, spawnLocatorMuzzleFlare.rotation) as GameObject;
-            rifleFlarePool.Add(clone);
-            clone.transform.parent = objectPool.transform;
-            clone.SetActive(false);
+            //테그에 ProjectileImpactRoot 있는거 찾기
+            projectileActor.Projectile = GameObject.FindGameObjectWithTag("Projectile").transform;
         }
 
-        //재활용 탄피 생성해서 풀에 넣기
-        for (int index = 0; index < rifleShellPoolMaxCount; index++)
+        //한번 실행되게
+        if (projectileActor.Muzzle == null)
         {
-            GameObject clone = Instantiate(bombList[bombType].shellPrefab, shellLocator.position, shellLocator.rotation) as GameObject;
-            rifleShellPool.Add(clone);
-            clone.transform.parent = objectPool.transform;
-            clone.SetActive(false);
+            //테그에 ProjectileImpactRoot 있는거 찾기
+            projectileActor.Muzzle = GameObject.FindGameObjectWithTag("Muzzle").transform;
         }
 
-        //재활용 탄두 생성해서 풀에 넣기
-        for (int index = 0; index < rifleProjectilePoolMaxCount; index++)
+        //한번만 실행되게
+        if (projectileActor.Shell == null)
         {
-            //리지드 바디 타입이라 변환해서 받음
-            GameObject clone = Instantiate(bombList[bombType].bombPrefab, spawnLocator.position, spawnLocator.rotation).gameObject;
-            rifleProjectilePool.Add(clone);
-            clone.transform.parent = objectPool.transform;
-            clone.SetActive(false);
-        }
-
-        //재활용 탄두에의해 좀비가 맞은 상흔 표현 생성해서 풀에 넣기
-        for (int index = 0; index < rifleProjectilePoolMaxCount; index++)
-        {
-            //입펙트 프리팹은 탄두에 ExplodingProjectile.cs에 있어서 거기서 가져옴
-            GameObject clone = Instantiate(bombList[bombType].bombPrefab.transform.GetComponent<ExplodingProjectile>().impactPrefab);
-            rifleImpactPool.Add(clone);
-            clone.transform.parent = objectPool.transform;
-            clone.SetActive(false);
+            //테그에 ProjectileImpactRoot 있는거 찾기
+            projectileActor.Shell = GameObject.FindGameObjectWithTag("Shell").transform;
         }
     }
+    //여기까지
 
     // Use this for initialization
     void Start ()
     {
-        //if (UImaster)
-        //{
-        //    UiText.text = bombList[bombType].name.ToString();
-        //}
-
+        if (UImaster)
+        {
+            UiText.text = bombList[bombType].name.ToString();
+        }
         if (swarmMissileLauncher)
         {
             projectileSimFire = 5;
         }
-    }
+	}
 	
 	// Update is called once per frame
-	/*void Update ()
+	void Update ()
     {
         //Movement
         if(Input.GetButton("Horizontal"))
@@ -168,24 +145,27 @@ public class projectileActor : MonoBehaviour {
             firingTimer = 0;
         }
 
-        if (bombList[bombType].rapidFire && firing)
-        {
-            if(firingTimer > bombList[bombType].rapidFireCooldown+rapidFireDelay)
-            {
-                Fire();
-                firingTimer = 0;
-            }
-        }
+        
 
         if(firing)
         {
             firingTimer += Time.deltaTime;
         }
-	}*/
+	}
 
-    public void Stop() 
+    //원래는 Update에 있었으나 timeScale싱크 문제로 슬로우 모드에서 타임 스케일을 나눈 값만큼 속도 추가 되어야
+    //하는데 씹혀서 들어가는 부분 해결
+    //고정 업데이트 부분으로 옮김
+    private void FixedUpdate()
     {
-        firing = false;
+        if (bombList[bombType].rapidFire && firing)
+        {
+            if (firingTimer > bombList[bombType].rapidFireCooldown + rapidFireDelay)
+            {
+                Fire();
+                firingTimer = 0;
+            }
+        }
     }
 
     public void Switch(int value)
@@ -200,92 +180,62 @@ public class projectileActor : MonoBehaviour {
             {
                 bombType = 0;
             }
-        //if (UImaster)
-        //{
-        //    UiText.text = bombList[bombType].name.ToString();
-        //}
+        if (UImaster)
+        {
+            UiText.text = bombList[bombType].name.ToString();
+        }
     }
 
     public void Fire()
     {
-        //카메라 흔드는 부분
         if(CameraShake)
         {
-            //CameraShakeCaller.ShakeCamera();
+            CameraShakeCaller.ShakeCamera();
         }
-        //Debug.Log("bombType = " + bombType.ToString() + " index = " + (int)bombType);
-
-        //edit start
-        //old code start
-        //Instantiate(bombList[bombType].muzzleflare, spawnLocatorMuzzleFlare.position, spawnLocatorMuzzleFlare.rotation);
-        //old code end
-        Transform flare = rifleFlarePool[rifleFlarePoolCount].transform;
-        flare.gameObject.SetActive(true);//활성화
-        flare.position = spawnLocatorMuzzleFlare.position;//포지션 재조정
-        flare.rotation = spawnLocatorMuzzleFlare.rotation;//로테이션 재조정
-        flare.GetComponent<ParticleSystem>().Simulate(0f, true, true);  //에니메이션 Reset
-        flare.GetComponent<ParticleSystem>().Play();                    //에니메이션 Start
-        rifleFlarePoolCount++;
-        if(rifleFlarePoolMaxCount <= rifleFlarePoolCount) { rifleFlarePoolCount = 0; }
+        clone = Instantiate(bombList[bombType].muzzleflare, spawnLocatorMuzzleFlare.position, spawnLocatorMuzzleFlare.rotation);
+        //부모 추가부분 0
+        if (projectileActor.Muzzle != null) { clone.transform.SetParent(projectileActor.Muzzle); }
         //   bombList[bombType].muzzleflare.Play();
+
         if (bombList[bombType].hasShells)
         {
-            //old code start
-            //Instantiate(bombList[bombType].shellPrefab, shellLocator.position, shellLocator.rotation);
-            //old code end
-            Transform shell = rifleShellPool[rifleShellPoolCount].transform;
-            shell.gameObject.SetActive(true);//활성화
-            shell.position = shellLocator.position;//포지션 재조정
-            shell.rotation = shellLocator.rotation;//로테이션 재조정
-            shell.GetComponent<ParticleSystem>().Simulate(0f, true, true);  //에니메이션 Reset
-            shell.GetComponent<ParticleSystem>().Play();                    //에니메이션 Start
-            rifleShellPoolCount++;
-            if (rifleShellPoolMaxCount <= rifleShellPoolCount) { rifleShellPoolCount = 0; }
+            clone = Instantiate(bombList[bombType].shellPrefab, shellLocator.position, shellLocator.rotation);
+            //부모 추가부분 1
+            if (projectileActor.Shell != null) { clone.transform.SetParent(projectileActor.Shell); }
+            
         }
-        //edit end
-
         recoilAnimator.SetTrigger("recoil_trigger");
 
-        Rigidbody rocketInstance;
+        //캐슁용으로 전환 때문에 지역변수 disable
+        //Rigidbody rocketInstance;
 
-        //edit start
-        //old code start
-        //rocketInstance = Instantiate(bombList[bombType].bombPrefab, spawnLocator.position,spawnLocator.rotation) as Rigidbody;
+        //라이플,권총 탄환 부분
+        rocketInstance = Instantiate(bombList[bombType].bombPrefab, spawnLocator.position,spawnLocator.rotation) as Rigidbody;
+        //부모 추가부분 2
+        if (projectileActor.Projectile != null) { rocketInstance.transform.SetParent(projectileActor.Projectile);}
+        //테스트 코드
+        //[Test 001]
+        projectiles.Add(rocketInstance.transform);
+
         // Quaternion.Euler(0,90,0)
-
-        //old code end
-        Transform projectile = rifleProjectilePool[rifleProjectilePoolCount].transform;
-
-        //리지드 바디 힘 초기화 
-        rocketInstance = projectile.GetComponent<Rigidbody>();
-        rocketInstance.velocity = Vector3.zero;
-        rocketInstance.angularVelocity = Vector3.zero;
-        rocketInstance.Sleep();
-        projectile.GetComponent<ExplodingProjectile>().previousPosition = spawnLocator.position;
-        //탄두에 의해 생성된 이펙트 넣어버림 [이때 프리팹에서 풀링된 임팩트로 교체 발생]
-        projectile.GetComponent<ExplodingProjectile>().impactPrefab = rifleImpactPool[rifleProjectilePoolCount];
-
-        projectile.gameObject.SetActive(true);//활성화
-        projectile.position = spawnLocator.position;//포지션 재조정
-        projectile.rotation = spawnLocator.rotation;//로테이션 재조정
-        projectile.GetComponent<ParticleSystem>().Simulate(0f, true, true);  //에니메이션 Reset
-        projectile.GetComponent<ParticleSystem>().Play();                    //에니메이션 Start
-        rifleProjectilePoolCount++;
-        if (rifleProjectilePoolMaxCount <= rifleProjectilePoolCount) { rifleProjectilePoolCount = 0; }
-
-        //edit end
-        rocketInstance.AddForce(spawnLocator.forward * Random.Range(bombList[bombType].min, bombList[bombType].max));
-        //프로젝타일에 임팩트 까지 같이 넣어버림
-
-        //여기는 샷건 부분 이쪽도 풀링작업 해야함
+        //Time.timeScale /하는 부분 추가 => 슬로우 적용시 문제가 생겨서 추가함.
+        rocketInstance.AddForce(spawnLocator.forward * Random.Range(bombList[bombType].min, bombList[bombType].max) / Time.timeScale);
+        //샷건 탄환 부분
         if (bombList[bombType].shotgunBehavior)
         {
             for(int i = 0; i < bombList[bombType].shotgunPellets ;i++ )
             {
                 Rigidbody rocketInstanceShotgun;
                 rocketInstanceShotgun = Instantiate(bombList[bombType].bombPrefab, shotgunLocator[i].position, shotgunLocator[i].rotation) as Rigidbody;
+                //부모 추가부분 3
+                if (projectileActor.Projectile != null) { rocketInstanceShotgun.transform.SetParent(projectileActor.Projectile); }
+                //테스트 코드
+                //[Test 001]
+                projectiles.Add(rocketInstance.transform);
+
                 // Quaternion.Euler(0,90,0)
                 rocketInstanceShotgun.AddForce(shotgunLocator[i].forward * Random.Range(bombList[bombType].min, bombList[bombType].max));
+                
             }
         }
 
