@@ -383,18 +383,18 @@ namespace WoosanStudio.ZombieShooter
         */
 
 
-        /*void OnGUI()
+        void OnGUI()
         {
             if (GUI.Button(new Rect(0, 0, 200, 150), "사격"))
             {
-                //m_projectileActor.Fire();
-                m_projectileActor.Switch(1);
+                m_projectileActor.Fire();
+                //m_projectileActor.Switch(1);
             }
 
             //if (GUI.Button(new Rect(0, 150, 200, 150), "중지"))
             //{
 
             //}
-        }*/
+        }
     }
 }
