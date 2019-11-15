@@ -60,11 +60,6 @@ namespace WoosanStudio.ZombieShooter
 
         //사격시 발생하는 BlobLight
         public GameObject objGunFireBlobLights;
-
-        //총기의 레이저 포인터 리스트[총기 많아 졌을때 무기 교체시 무기마다 레이저포인터 세팅되게 해야함]
-        public List<Transform> laserPointers = new List<Transform>();
-        //레이저 포인트
-        public LineRenderer lineRenderer;
         //임시 사용
         Vector3 tmpPos;
         float distance = 0.25f;
@@ -237,10 +232,6 @@ namespace WoosanStudio.ZombieShooter
             {
                 Reload();
             }
-            //레이저 포인트 용
-            lineRenderer.SetPosition(0, laserPointers[0].position);
-            tmpPos = laserPointers[0].TransformPoint(new Vector3(0, 0, 10f));
-            lineRenderer.SetPosition(1, tmpPos);
         }
 
         void Reload()
