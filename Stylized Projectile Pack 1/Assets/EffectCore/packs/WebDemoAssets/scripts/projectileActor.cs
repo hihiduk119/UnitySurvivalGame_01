@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
+using UnityEngine.Events;
+
 public class projectileActor : MonoBehaviour {
 
     public Transform spawnLocator;
     [Header("[총기 화염 부분]")]
     public Transform spawnLocatorMuzzleFlare;
-    [Header ("[탄피 배출부분]")]
+    [Header("[탄피 배출부분]")]
     public Transform shellLocator;
     public Animator recoilAnimator;
     [Header("[파티클 스캐일 조정을 위해 추가]")]
@@ -24,7 +26,7 @@ public class projectileActor : MonoBehaviour {
         public GameObject muzzleflare;
         public float min, max;
         public bool rapidFire;
-        public float rapidFireCooldown;   
+        public float rapidFireCooldown;
 
         public bool shotgunBehavior;
         public int shotgunPellets;
@@ -46,7 +48,7 @@ public class projectileActor : MonoBehaviour {
     public bool firing;
     public int bombType = 0;
 
-   // public ParticleSystem muzzleflare;
+    // public ParticleSystem muzzleflare;
 
     public bool swarmMissileLauncher = false;
     int projectileSimFire = 1;
@@ -64,13 +66,15 @@ public class projectileActor : MonoBehaviour {
     public static Transform Muzzle;
     public static Transform Shell;
 
-    //타임 스캐일 변환시 리지드 바디에 속도 값이 이상하게 발생하는 현상을 체크하기 위한 테스트 리스트
-    //[Test 001]
-    public List<Transform> projectiles = new List<Transform>();
-
     //캐슁용
     private GameObject clone;
     Rigidbody rocketInstance;
+
+    //발사 발사시 이벤트 발생
+    public UnityEvent eventProjectileFired = new UnityEvent();
+
+    
+
     private void Awake()
     {
         //자동으로 하이얼아키에서 해당 오브젝트 찾기
@@ -192,7 +196,11 @@ public class projectileActor : MonoBehaviour {
 
     public void Fire()
     {
-        if(CameraShake)
+        //사격 이벤트 발사
+        eventProjectileFired.Invoke();
+
+        //카메라 흔들기
+        if (CameraShake)
         {
             CameraShakeCaller.ShakeCamera();
         }
@@ -223,9 +231,6 @@ public class projectileActor : MonoBehaviour {
         rocketInstance.transform.localScale = spawnScale;
         //부모 추가부분 2
         if (projectileActor.Projectile != null) { rocketInstance.transform.SetParent(projectileActor.Projectile);}
-        //테스트 코드
-        //[Test 001]
-        projectiles.Add(rocketInstance.transform);
 
         // Quaternion.Euler(0,90,0)
         //Time.timeScale /하는 부분 추가 => 슬로우 적용시 문제가 생겨서 추가함.
@@ -241,9 +246,6 @@ public class projectileActor : MonoBehaviour {
                 rocketInstanceShotgun.transform.localScale = spawnScale;
                 //부모 추가부분 3
                 if (projectileActor.Projectile != null) { rocketInstanceShotgun.transform.SetParent(projectileActor.Projectile); }
-                //테스트 코드
-                //[Test 001]
-                projectiles.Add(rocketInstance.transform);
 
                 // Quaternion.Euler(0,90,0)
                 rocketInstanceShotgun.AddForce(shotgunLocator[i].forward * Random.Range(bombList[bombType].min, bombList[bombType].max));

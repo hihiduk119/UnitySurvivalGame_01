@@ -9,7 +9,7 @@ namespace WoosanStudio.ZombieShooter
     /// 무기 데이터를 정의함
     /// </summary>
     [Serializable]
-    public class Weapon
+    public class Weapon : ICloneable
     {
         /// <summary>
         /// 속
@@ -40,5 +40,17 @@ namespace WoosanStudio.ZombieShooter
         public float demage;
         //projectileActor에서 사용된 projectile의 인덱스
         public int projectileIndex;
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+    }
+
+    [Serializable]
+    public class Weapons
+    {
+        //모든 무기를 저장할 데이터
+        public List<Weapon> weapons = new List<Weapon>();
     }
 }

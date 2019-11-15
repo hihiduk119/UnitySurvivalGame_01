@@ -33,16 +33,18 @@ namespace WoosanStudio.ZombieShooter
             CasingJam,  //탄 걸림
         }
 
-        //사격할 타겟들
+        [Header("[몬스터 타겟들]")]
         public List<Transform> targets = new List<Transform>();
-        //플레이어
+        [Header ("[플레이어 트렌스폼]")]
         public Transform player;
-        //발사체 관련
+        [Header ("[발사체 컨트롤 및 관력 이펙트]")]
         public projectileActor m_projectileActor;
+        [Header("[총구 불꽃 프로젝터 컨트롤]")]
+
 
         //저장되어 있는 무기 리스트 [현재 아무것도 없음 json을 데이터 로드 구현 해야함]
-        public List<Weapon> weapons = new List<Weapon>();
-        public Weapon currentWeapon = null;
+        private List<Weapon> weapons = new List<Weapon>();
+        private Weapon currentWeapon = null;
 
         /// <summary>
         /// 매 프레임 사격 가능 여부를 확인
@@ -92,6 +94,18 @@ namespace WoosanStudio.ZombieShooter
         void Fire(GameObject target)
         {
 
+        }
+
+        /// <summary>
+        /// projectileActor에서 발사체 발사 통보
+        /// </summary>
+        public void CallbackProjectileFired()
+        {
+            //총 종류에 따른 다름 화염 연출 부분 필요
+            //To Do..
+
+            //충구 화염 이펙트 연출
+            MuzzleEffectController.Instance.Active();
         }
 
         /// <summary>

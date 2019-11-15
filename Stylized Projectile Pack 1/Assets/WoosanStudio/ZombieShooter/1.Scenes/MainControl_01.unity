@@ -17951,9 +17951,6 @@ MonoBehaviour:
   aimMaker: {fileID: 1705964933}
   m_projectileActor: {fileID: 2324998055079692124}
   objGunFireBlobLights: {fileID: 288778482}
-  laserPointers:
-  - {fileID: 1718393977}
-  lineRenderer: {fileID: 80648365}
 --- !u!195 &1346651296
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -17991,12 +17988,6 @@ MonoBehaviour:
   targets: []
   player: {fileID: 1346651289}
   m_projectileActor: {fileID: 2324998055079692124}
-  weapons: []
-  currentWeapon:
-    name: 
-    id: 0
-    demage: 0
-    projectileIndex: 0
 --- !u!4 &1351739508 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: d80c7433031fdee44bf3910c4b046ce7,
@@ -27913,7 +27904,20 @@ MonoBehaviour:
   Tor_max: 0
   MinorRotate: 1
   MajorRotate: 0
-  projectiles: []
+  eventProjectileFired:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1346651297}
+        m_MethodName: CallbackProjectileFired
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!23 &2324998055079692125
 MeshRenderer:
   m_ObjectHideFlags: 0
