@@ -11,6 +11,8 @@ public class projectileActor : MonoBehaviour {
     [Header ("[탄피 배출부분]")]
     public Transform shellLocator;
     public Animator recoilAnimator;
+    [Header("[파티클 스캐일 조정을 위해 추가]")]
+    public Vector3 spawnScale = new Vector3(0.75f, 0.75f, 0.75f);
 
     public Transform[] shotgunLocator;
 
@@ -138,6 +140,8 @@ public class projectileActor : MonoBehaviour {
         {
             firing = true;
             Fire();
+
+            Debug.Log("down");
         }
         if (Input.GetButtonUp("Fire1"))
         {
@@ -170,16 +174,16 @@ public class projectileActor : MonoBehaviour {
 
     public void Switch(int value)
     {
-            bombType += value;
-            if (bombType < 0)
-            {
-              bombType = bombList.Length;
-              bombType--;
-            }
-            else if (bombType >= bombList.Length)
-            {
-                bombType = 0;
-            }
+        bombType += value;
+        if (bombType < 0)
+        {
+            bombType = bombList.Length;
+            bombType--;
+        }
+        else if (bombType >= bombList.Length)
+        {
+            bombType = 0;
+        }
         if (UImaster)
         {
             UiText.text = bombList[bombType].name.ToString();
@@ -193,6 +197,8 @@ public class projectileActor : MonoBehaviour {
             CameraShakeCaller.ShakeCamera();
         }
         clone = Instantiate(bombList[bombType].muzzleflare, spawnLocatorMuzzleFlare.position, spawnLocatorMuzzleFlare.rotation);
+        //스케일 조정
+        clone.transform.localScale = spawnScale;
         //부모 추가부분 0
         if (projectileActor.Muzzle != null) { clone.transform.SetParent(projectileActor.Muzzle); }
         //   bombList[bombType].muzzleflare.Play();
@@ -200,6 +206,8 @@ public class projectileActor : MonoBehaviour {
         if (bombList[bombType].hasShells)
         {
             clone = Instantiate(bombList[bombType].shellPrefab, shellLocator.position, shellLocator.rotation);
+            //스케일 조정
+            clone.transform.localScale = spawnScale;
             //부모 추가부분 1
             if (projectileActor.Shell != null) { clone.transform.SetParent(projectileActor.Shell); }
             
@@ -211,6 +219,8 @@ public class projectileActor : MonoBehaviour {
 
         //라이플,권총 탄환 부분
         rocketInstance = Instantiate(bombList[bombType].bombPrefab, spawnLocator.position,spawnLocator.rotation) as Rigidbody;
+        //스케일 조정
+        rocketInstance.transform.localScale = spawnScale;
         //부모 추가부분 2
         if (projectileActor.Projectile != null) { rocketInstance.transform.SetParent(projectileActor.Projectile);}
         //테스트 코드
@@ -227,6 +237,8 @@ public class projectileActor : MonoBehaviour {
             {
                 Rigidbody rocketInstanceShotgun;
                 rocketInstanceShotgun = Instantiate(bombList[bombType].bombPrefab, shotgunLocator[i].position, shotgunLocator[i].rotation) as Rigidbody;
+                //스케일 조정
+                rocketInstanceShotgun.transform.localScale = spawnScale;
                 //부모 추가부분 3
                 if (projectileActor.Projectile != null) { rocketInstanceShotgun.transform.SetParent(projectileActor.Projectile); }
                 //테스트 코드

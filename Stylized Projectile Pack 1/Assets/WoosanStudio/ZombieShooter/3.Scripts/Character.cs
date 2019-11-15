@@ -196,12 +196,16 @@ namespace WoosanStudio.ZombieShooter
         }
 
         IEnumerator CorFire() {
+            //프로젝타일액터에 기본으로 사용되고 있는 연속 사격 시퀀스 사용할때
+            //m_projectileActor.firing = true;
+            //m_projectileActor.Fire();
             //사격 딜레이
             WaitForSeconds delay = new WaitForSeconds(.075f);
             yield return new WaitForSeconds(0.1f);
             while (true) {
                 //재장전 중이 아닐때만 사격
                 if(!isReloading) {
+                    //직접 사격 제어 할때
                     m_projectileActor.Fire();
                     //총기 화염 표현
                     this.objGunFireBlobLights.SetActive(true);
