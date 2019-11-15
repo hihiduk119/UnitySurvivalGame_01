@@ -7,13 +7,15 @@ namespace WoosanStudio.ZombieShooter
 {
     /// <summary>
     /// 몬스터가 영역에 들어왔을때 사격 통제
+    /// 모든 사격 관련 부분을 컨트롤
+    /// 실제 발사체 컨트롤도 여기서함.
     /// </summary>
     public class FireController : MonoBehaviour
     {
         /// <summary>
         /// 사격 우선순위
         /// </summary>
-        public enum FirePriority
+        public enum Priority
         {
             LowHealth,      //낯은 체력 우선
             MinDistance,    //최소 거리 우선
@@ -37,6 +39,10 @@ namespace WoosanStudio.ZombieShooter
         public Transform player;
         //발사체 관련
         public projectileActor m_projectileActor;
+
+        //저장되어 있는 무기 리스트 [현재 아무것도 없음 json을 데이터 로드 구현 해야함]
+        public List<Weapon> weapons = new List<Weapon>();
+        public Weapon currentWeapon = null;
 
         /// <summary>
         /// 매 프레임 사격 가능 여부를 확인
@@ -114,6 +120,19 @@ namespace WoosanStudio.ZombieShooter
                 //있다면 제거
                 targets.RemoveAt(targets.FindIndex(value => value.name.Equals(target.name)));
             }
+        }
+
+        /// <summary>
+        /// 무기를 해당 인덱스로 변경
+        /// </summary>
+        /// <param name="index"></param>
+        public void SwitchWeapon(int index)
+        {
+            //해당 인덱스로 현재 무기를 세팅하는 부분이 필요함
+            //To Do..
+
+            //프로젝타일 엑터에서 무기 변환 [실제 발사체,총구화염,충돌 이펙트를 담당]
+            m_projectileActor.Switch(index);
         }
 
         void FixedUpdate()

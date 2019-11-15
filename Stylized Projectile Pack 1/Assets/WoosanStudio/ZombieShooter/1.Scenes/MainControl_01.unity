@@ -1628,7 +1628,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4cb4625763e244bda54c1d25c549cea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  muzzleBlobLights: {fileID: 0}
+  muzzleBlobLights: {fileID: 288778482}
   delay: 0.2
 --- !u!4 &140694006 stripped
 Transform:
@@ -17974,6 +17974,12 @@ MonoBehaviour:
   targets: []
   player: {fileID: 1346651289}
   m_projectileActor: {fileID: 2324998055079692124}
+  weapons: []
+  currentWeapon:
+    name: 
+    id: 0
+    demage: 0
+    projectileIndex: 0
 --- !u!4 &1351739508 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: d80c7433031fdee44bf3910c4b046ce7,
@@ -51016,14 +51022,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2300008, guid: 75de114f56c51404baa440b232faa1e9, type: 3}
-      propertyPath: m_ReceiveShadows
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2300008, guid: 75de114f56c51404baa440b232faa1e9, type: 3}
-      propertyPath: m_CastShadows
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 75de114f56c51404baa440b232faa1e9, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4294967295
@@ -51039,6 +51037,14 @@ PrefabInstance:
     - target: {fileID: 100006, guid: 75de114f56c51404baa440b232faa1e9, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 2300008, guid: 75de114f56c51404baa440b232faa1e9, type: 3}
+      propertyPath: m_ReceiveShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2300008, guid: 75de114f56c51404baa440b232faa1e9, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 75de114f56c51404baa440b232faa1e9, type: 3}
