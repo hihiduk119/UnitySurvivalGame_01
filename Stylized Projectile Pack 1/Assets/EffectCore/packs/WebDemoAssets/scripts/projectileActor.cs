@@ -157,9 +157,6 @@ public class projectileActor : MonoBehaviour {
             firing = false;
             firingTimer = 0;
         }*/
-
-
-
     }
 
     //원래는 Update에 있었으나 timeScale싱크 문제로 슬로우 모드에서 타임 스케일을 나눈 값만큼 속도 추가 되어야

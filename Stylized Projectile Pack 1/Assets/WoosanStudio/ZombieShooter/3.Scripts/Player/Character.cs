@@ -145,7 +145,10 @@ namespace WoosanStudio.ZombieShooter
             Debug.Log("몬스터에게 공격받음");
         }
 
-        private void FixedUpdate()
+        /// <summary>
+        /// FixedUpdate 사용시 부드럽지 않음
+        /// </summary>
+        private void Update()
         {
             //정면을 볼지 타겟을 볼지 결정
             LookAtTarget();
@@ -179,24 +182,30 @@ namespace WoosanStudio.ZombieShooter
         /// </summary>
         private void Move()
         {
-            
+
             //실제 이동을 담당
             //navMeshAgent.destination = transform.position + desiredVelocity;
 
-
-            //플레이어의 좌표와 왜곡 보정계산된 방향 가속도를 현재 좌표에 적용.
-            tmpPos = this.transform.localPosition;
-            tmpPos.z += desiredVelocity.z * distance;
-            tmpPos.x += desiredVelocity.x * distance;
+            if (cam != null)
+            {
+                //카메라 기준으로 조이스틱 방향성 바꿔줌
+                camForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
+                desiredVelocity = vertical * camForward + horizon * cam.right;
+            }
+            else
+            {
+                //카메라가 없다면 기본 방향
+                desiredVelocity = vertical * Vector3.forward + horizon * Vector3.right;
+            }
 
             //1.번 방식 말 머리 앞에 당근 놓아 쫒아가게 하는 방식
+            //플레이어의 좌표와 왜곡 보정계산된 방향 가속도를 현재 좌표에 적용.
+            //tmpPos = this.transform.localPosition;
+            //tmpPos.z += desiredVelocity.z * distance;
+            //tmpPos.x += desiredVelocity.x * distance;
             //joystickPivot.transform.localPosition = tmpPos;
             //해당 지점으로 이동시키는 코드 => 조이스틱에 의 움직인 오브젝트임
             //navMeshAgent.SetDestination(joystickPivot.transform.position);
-
-            //해당코드 => CorNavMove()로 이동
-            //navMeshAgent.destination = transform.position + desiredVelocity;
-
 
             //조준 됐다면 타겟을 바라봐야함
             if (aimed)
