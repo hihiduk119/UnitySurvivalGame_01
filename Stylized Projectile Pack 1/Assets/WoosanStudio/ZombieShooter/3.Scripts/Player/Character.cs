@@ -64,9 +64,9 @@ namespace WoosanStudio.ZombieShooter
         private Transform cam;                  
         private Vector3 camForward;
         //움직임 관련
-        bool aimed = false;
+        public bool aimed = false;
         //조준이 되는 에임 마커
-        public AimMaker aimMaker;
+        //public AimMaker aimMaker;
 
         //현재 사격중인지 아닌지 여부
         //bool firing = false;
@@ -100,9 +100,6 @@ namespace WoosanStudio.ZombieShooter
             {
                 cam = Camera.main.transform;
             }
-
-            //재시작용 초기화
-            Reset();
 
             //StartCoroutine(CorMoveJoystickPivot());
 
@@ -143,12 +140,6 @@ namespace WoosanStudio.ZombieShooter
                 navMeshAgent.destination = transform.position + desiredVelocity;
                 yield return WFS;
             }
-        }
-
-        public void Reset()
-        {
-            //시작시 에임 마커 디스에이블
-            aimMaker.gameObject.SetActive(false);
         }
 
         /// <summary>
@@ -230,12 +221,12 @@ namespace WoosanStudio.ZombieShooter
                 look = look.normalized;
 
                 //비활성화라면 활성화
-                if (!aimMaker.gameObject.activeSelf)
-                {
-                    aimMaker.gameObject.SetActive(true);
-                }
-                //조준된 좀비에 에임 활성화
-                aimMaker.SetValue(zombies[0], ZombieKinds.WeakZombie);
+                //if (!aimMaker.gameObject.activeSelf)
+                //{
+                //    aimMaker.gameObject.SetActive(true);
+                //}
+                ////조준된 좀비에 에임 활성화
+                //aimMaker.SetValue(zombies[0], ZombieKinds.WeakZombie);
                 //Debug.Log("look!");
                 //가상패드 인식이 없을때 그냥 서서 총쏘는 애니메이션
                 if (horizon == 0 && vertical == 0)
@@ -273,8 +264,8 @@ namespace WoosanStudio.ZombieShooter
                 aimed = false;
 
                 //에임 비활성화 시키고 나에게로 가져오기
-                aimMaker.SetValue(transform, ZombieKinds.WeakZombie);
-                aimMaker.gameObject.SetActive(false);
+                //aimMaker.SetValue(transform, ZombieKinds.WeakZombie);
+                //aimMaker.gameObject.SetActive(false);
             }
         }
 

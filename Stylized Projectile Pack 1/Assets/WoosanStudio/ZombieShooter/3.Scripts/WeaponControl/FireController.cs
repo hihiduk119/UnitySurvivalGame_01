@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Events;
 
 namespace WoosanStudio.ZombieShooter
 {
@@ -39,26 +39,36 @@ namespace WoosanStudio.ZombieShooter
         public Transform player;
         [Header ("[발사체 컨트롤 및 관력 이펙트]")]
         public projectileActor m_projectileActor;
-        [Header("[총구 불꽃 프로젝터 컨트롤]")]
-
+        [Header("[타겟의 바닥에 생기는 조준 마커]")]
+        public AimMaker aimMaker;
 
         //저장되어 있는 무기 리스트 [현재 아무것도 없음 json을 데이터 로드 구현 해야함]
         private List<Weapon> weapons = new List<Weapon>();
         private Weapon currentWeapon = null;
+        //현재 타게팅된 오브젝트
+        private Transform currentTarget;
+
+        //업데이트를 대신할 코루틴
+        Coroutine corTargetCheck;
+
+        //타겟팅이 발생했을때 발생하는 이벤트
+        public UnityEvent targetingEvent;
+
+        //캐쉬용
+        GameObject target;
+
+        private void Start()
+        {
+            //코루틴으로 업데이트를 대신한다
+            corTargetCheck = StartCoroutine(CorTargetCheck());
+        }
 
         /// <summary>
         /// 매 프레임 사격 가능 여부를 확인
         /// </summary>
         void FireControl()
         {
-            //현재 사격 중인 확인
-            if (!IsFire()) return;
-            //사격 가능 여부 확인
-            if (!FireAble()) return;
-            //사격 우선 순위 타겟 확인
-            GameObject target = FindPriorityTarget();
-            //우선 순위 타겟에 사격
-            Fire(target);
+            
         }
 
         /// <summary>
@@ -103,7 +113,6 @@ namespace WoosanStudio.ZombieShooter
         {
             //총 종류에 따른 다름 화염 연출 부분 필요
             //To Do..
-
         }
 
         /// <summary>
@@ -147,10 +156,57 @@ namespace WoosanStudio.ZombieShooter
             m_projectileActor.Switch(index);
         }
 
-        void FixedUpdate()
+        /// <summary>
+        /// 타겟팅이 바뀌었는지 확인하는 부분
+        /// </summary>
+        /// <returns>바뀐게 없거나 타겟이 없다면 null 리턴</returns>
+        Transform IsChangeTarget()
         {
-            //매 프레임 사격 가능 여부를 확인
-            FireControl();
+            return null;
+        }
+
+        //업데이트 대신 사용
+        IEnumerator CorTargetCheck()
+        {
+            WaitForSeconds WFS = new WaitForSeconds(0.1f);
+            while (true)
+            {
+                //타겟이 바뀌었는지 확인
+                currentTarget = IsChangeTarget();
+                //타겟이 바뀠다면 재설정
+                if (currentTarget != null)
+                {
+                    //마커 재설정
+                    aimMaker.SetValue(currentTarget);
+                }
+
+
+                //현재 사격 중인 확인
+                if (!IsFire()) break;
+                //사격 가능 여부 확인
+                if (!FireAble()) break;
+                //사격 우선 순위 타겟 확인
+                target = FindPriorityTarget();
+
+                //우선 순위 타겟에 사격
+                Fire(target);
+
+                //매 프레임 사격 가능 여부를 확인
+                //FireControl();
+
+                yield return WFS;
+            }
+        }
+
+        //타겟 추가 됫는지 아닌지 확인용 테스트 코드
+        private void Update()
+        {
+            Debug.Log("타겟 수 = " + targets.Count);
+            //타겟에 저장된 모든 오브젝트에 라인그려서 표시
+            for(int index = 0;index < targets.Count ;index++)
+            {
+                Debug.DrawLine(transform.position, targets[index].transform.position, Color.red);
+            }
         }
     }
 }
