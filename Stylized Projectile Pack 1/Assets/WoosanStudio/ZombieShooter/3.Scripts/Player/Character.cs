@@ -12,6 +12,9 @@ using WoosanStudio.Common;
 
 namespace WoosanStudio.ZombieShooter
 {
+    /// <summary>
+    /// 해당 컨트롤러는 움직임만 담
+    /// </summary>
     public class Character : MonoSingleton<Character>
     {
         /// <summary>
@@ -65,8 +68,6 @@ namespace WoosanStudio.ZombieShooter
         //조준이 되는 에임 마커
         public AimMaker aimMaker;
 
-        //발사체 관련
-        public projectileActor m_projectileActor;
         //현재 사격중인지 아닌지 여부
         //bool firing = false;
         bool isReloading = false;
@@ -76,9 +77,6 @@ namespace WoosanStudio.ZombieShooter
         //int bulletMagazineMaxCount = 30;
         //현재 남은 총알수
         //int bulletMagazineCount = 0;
-
-        //사격시 발생하는 BlobLight
-        public GameObject objGunFireBlobLights;
         //임시 사용
         Vector3 tmpPos;
         float distance = 0.25f;
@@ -151,8 +149,6 @@ namespace WoosanStudio.ZombieShooter
         {
             //시작시 에임 마커 디스에이블
             aimMaker.gameObject.SetActive(false);
-            //사격중지
-            //m_projectileActor.Stop();
         }
 
         /// <summary>
@@ -283,18 +279,16 @@ namespace WoosanStudio.ZombieShooter
         }
 
 
-        void OnGUI()
-        {
-            if (GUI.Button(new Rect(0, 0, 200, 150), "사격"))
-            {
-                m_projectileActor.Fire();
-                //m_projectileActor.Switch(1);
-            }
+        //void OnGUI()
+        //{
+        //    if (GUI.Button(new Rect(0, 0, 200, 150), "사격"))
+        //    {
+        //    }
 
-            //if (GUI.Button(new Rect(0, 150, 200, 150), "중지"))
-            //{
+        //    if (GUI.Button(new Rect(0, 150, 200, 150), "중지"))
+        //    {
 
-            //}
-        }
+        //    }
+        //}
     }
 }

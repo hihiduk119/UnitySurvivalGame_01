@@ -99,13 +99,11 @@ namespace WoosanStudio.ZombieShooter
         /// <summary>
         /// projectileActor에서 발사체 발사 통보
         /// </summary>
-        public void CallbackProjectileFired()
+        public void FireProjectile()
         {
             //총 종류에 따른 다름 화염 연출 부분 필요
             //To Do..
 
-            //충구 화염 이펙트 연출
-            MuzzleEffectController.Instance.Active();
         }
 
         /// <summary>

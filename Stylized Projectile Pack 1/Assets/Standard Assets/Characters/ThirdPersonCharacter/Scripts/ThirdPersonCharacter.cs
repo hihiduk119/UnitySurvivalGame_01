@@ -216,7 +216,9 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 		{
 			// help the character turn faster (this is in addition to root rotation in the animation)
 			float turnSpeed = Mathf.Lerp(m_StationaryTurnSpeed, m_MovingTurnSpeed, m_ForwardAmount);
+            Debug.Log("turnSpeed = " + turnSpeed);
 			transform.Rotate(0, m_TurnAmount * turnSpeed * Time.deltaTime, 0);
+            //Debug.Log("turn = " + (m_TurnAmount * turnSpeed * Time.deltaTime));
 		}
 
 

@@ -41,6 +41,7 @@ public class projectileActor : MonoBehaviour {
 
     public bool UImaster = true;
     public bool CameraShake = true;
+    public bool UseMouseClick = false;
     public float rapidFireDelay;
     public CameraShakeProjectile CameraShakeCaller;
 
@@ -71,7 +72,7 @@ public class projectileActor : MonoBehaviour {
     Rigidbody rocketInstance;
 
     //발사 발사시 이벤트 발생
-    public UnityEvent eventProjectileFired = new UnityEvent();
+    public UnityEvent fireEvent = new UnityEvent();
 
     
 
@@ -114,7 +115,6 @@ public class projectileActor : MonoBehaviour {
         }
 	}
 	
-	// Update is called once per frame
 	void Update ()
     {
         //test code [사격중간에 느려지는 타이밍 발생해서]
@@ -144,21 +144,25 @@ public class projectileActor : MonoBehaviour {
         //    Switch(1);
         //}
 
-
-        /*if (Input.GetButtonDown("Fire1"))
+        //마우스 테스트시 사용하기 위한 테스트코드
+        if (UseMouseClick)
         {
-            firing = true;
-            Fire();
+            if (Input.GetButtonDown("Fire1"))
+            {
+                firing = true;
+                Fire();
 
-            Debug.Log("down");
+                Debug.Log("down");
+            }
+            if (Input.GetButtonUp("Fire1"))
+            {
+                firing = false;
+                firingTimer = 0;
+            }
         }
-        if (Input.GetButtonUp("Fire1"))
-        {
-            firing = false;
-            firingTimer = 0;
-        }*/
     }
 
+    //이 부분 다시 확인해서 왜그런지 이유 정확하게 찾아야 .
     //원래는 Update에 있었으나 timeScale싱크 문제로 슬로우 모드에서 타임 스케일을 나눈 값만큼 속도 추가 되어야
     //하는데 씹혀서 들어가는 부분 해결
     //고정 업데이트 부분으로 옮김
@@ -200,7 +204,7 @@ public class projectileActor : MonoBehaviour {
     public void Fire()
     {
         //사격 이벤트 발사
-        eventProjectileFired.Invoke();
+        fireEvent.Invoke();
 
         //카메라 흔들기
         if (CameraShake)

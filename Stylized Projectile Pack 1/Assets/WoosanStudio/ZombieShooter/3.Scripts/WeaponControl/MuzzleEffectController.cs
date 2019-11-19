@@ -16,7 +16,7 @@ namespace WoosanStudio.ZombieShooter
         //활성,비활성화 시킬 총구 이펙트
         public GameObject muzzleBlobLights;
         //총구 화염 유지 시간
-        public float delay = 0.2f;
+        public float delay = 0.1f;
 
         //코루팀 저장용
         Coroutine corActive;
