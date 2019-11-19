@@ -18,8 +18,7 @@ namespace WoosanStudio.ZombieShooter
         //캐슁
         Vector3 tmpPos;
 
-
-        private void FixedUpdate()
+        private void Update()
         {
             if (!isVisible) return;
 

@@ -93,6 +93,39 @@ namespace WoosanStudio.ZombieShooter
             Reset();
 
             //StartCoroutine(CorMoveJoystickPivot());
+
+            //NavMeshAgent를 사용하여 실제 조이스틱 값을 사용해서 움직이는 부분
+            StartCoroutine(CorNavMove());
+        }
+
+        IEnumerator CorNavMove()
+        {
+            //값으 높을수록 좋다. 퍼포먼스 생각하면 값 세팅
+            WaitForSeconds WFS = new WaitForSeconds(0.1f);
+            while(true)
+            {
+                //실제 조이스틱 값 가져오는 부분
+                horizon = UltimateJoystick.GetHorizontalAxis("Move");
+                vertical = UltimateJoystick.GetVerticalAxis("Move");
+
+                //Debug.Log("h = " + vertical + " v = " + vertical);
+
+                if (cam != null)
+                {
+                    //카메라 기준으로 조이스틱 방향성 바꿔줌
+                    camForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
+                    desiredVelocity = vertical * camForward + horizon * cam.right;
+                }
+                else
+                {
+                    //카메라가 없다면 기본 방향
+                    desiredVelocity = vertical * Vector3.forward + horizon * Vector3.right;
+                }
+
+                //네비메쉬에이전트에 값 집어넣어서 실제 움직임
+                navMeshAgent.destination = transform.position + desiredVelocity;
+                yield return WFS;
+            }
         }
 
         public void Reset()
@@ -146,23 +179,7 @@ namespace WoosanStudio.ZombieShooter
         /// </summary>
         private void Move()
         {
-            //실제 조이스틱 값 가져오는 부분
-            horizon = UltimateJoystick.GetHorizontalAxis("Move");
-            vertical = UltimateJoystick.GetVerticalAxis("Move");
-
-            //Debug.Log("h = " + vertical + " v = " + vertical);
-
-            if (cam != null)
-            {
-                //카메라 기준으로 조이스틱 방향성 바꿔줌
-                camForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
-                desiredVelocity = vertical * camForward + horizon * cam.right;
-            }
-            else
-            {
-                //카메라가 없다면 기본 방향
-                desiredVelocity = vertical * Vector3.forward + horizon * Vector3.right;
-            }
+            
             //실제 이동을 담당
             //navMeshAgent.destination = transform.position + desiredVelocity;
 
@@ -172,14 +189,13 @@ namespace WoosanStudio.ZombieShooter
             tmpPos.z += desiredVelocity.z * distance;
             tmpPos.x += desiredVelocity.x * distance;
 
-            //러프를 걸 타겟
-            joystickPivot.transform.localPosition = tmpPos;
-
+            //1.번 방식 말 머리 앞에 당근 놓아 쫒아가게 하는 방식
+            //joystickPivot.transform.localPosition = tmpPos;
             //해당 지점으로 이동시키는 코드 => 조이스틱에 의 움직인 오브젝트임
             //navMeshAgent.SetDestination(joystickPivot.transform.position);
-            navMeshAgent.destination = transform.position + desiredVelocity;
-            //navMeshAgent.Move(joystickPivot.transform.position);
-            //navMeshAgent.SetDestination(joystickPivot.transform.position);
+
+            //해당코드 => CorNavMove()로 이동
+            //navMeshAgent.destination = transform.position + desiredVelocity;
 
 
             //조준 됐다면 타겟을 바라봐야함
