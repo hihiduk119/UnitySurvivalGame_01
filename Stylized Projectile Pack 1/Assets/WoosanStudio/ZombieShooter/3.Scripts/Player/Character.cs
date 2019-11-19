@@ -8,14 +8,33 @@ using UnityEngine.AI;
 
 using System;
 
+using WoosanStudio.Common;
+
 namespace WoosanStudio.ZombieShooter
 {
-    public class Character : MonoBehaviour
+    public class Character : MonoSingleton<Character>
     {
-        public static Character instance;
+        /// <summary>
+        /// 움직임 상태
+        /// </summary>
+        enum MoveState
+        {
+            JoystickDirection,      //조이스틱 방향 주시
+            LookAtTarget,           //타겟 주시
+        }
+
+        /// <summary>
+        /// 가지고 있는 무기 가동 상태
+        /// </summary>
+        enum HasWeaponState
+        {
+            Default,    //기본
+            Shooting,   //사격중
+            Reloading,  //재장전중
+        }
+
         //좀비의 공격
         public UnityAction<ZombieKinds> attackAction;
-
         //사거리에 들어온 좀비 리스트
         List<Transform> zombies = new List<Transform>();
         //사거리 관련 
@@ -71,11 +90,6 @@ namespace WoosanStudio.ZombieShooter
             action();
         }
 
-        private void Awake()
-        {
-            instance = this;
-        }
-
         private void Start()
         {
             //네비게이션 세팅
@@ -98,6 +112,11 @@ namespace WoosanStudio.ZombieShooter
             StartCoroutine(CorNavMove());
         }
 
+        /// <summary>
+        /// NavMeshAgent를 사용하여 실제 조이스틱 값을 사용해서 움직이는 부분
+        /// NavMeshAgent 는 이동에만 사용.
+        /// </summary>
+        /// <returns></returns>
         IEnumerator CorNavMove()
         {
             //값으 높을수록 좋다. 퍼포먼스 생각하면 값 세팅
@@ -146,14 +165,14 @@ namespace WoosanStudio.ZombieShooter
         }
 
         /// <summary>
-        /// FixedUpdate 사용시 부드럽지 않음
+        /// FixedUpdate 사용시 부드럽지 않아서 기본 Update사용
         /// </summary>
         private void Update()
         {
             //정면을 볼지 타겟을 볼지 결정
-            LookAtTarget();
-            //이동
-            Move();
+            LookAtStateControl();
+            //앞으로 걷을지 뒷걸을 칠지 결정
+            MoveStateControl();
 
             //Test code [Test 1]
             if (Input.GetKeyDown(KeyCode.R))
@@ -178,9 +197,10 @@ namespace WoosanStudio.ZombieShooter
         }
 
         /// <summary>
-        /// 이동 부분
+        /// 앞으로 걷을지 뒷걸을 칠지 결정
+        /// 회전도 결정함. 회전은 서드퍼슨캐릭터 사용
         /// </summary>
-        private void Move()
+        private void MoveStateControl()
         {
 
             //실제 이동을 담당
@@ -235,7 +255,7 @@ namespace WoosanStudio.ZombieShooter
                     //Debug.Log("x = " + look.x +"  z = " + look.z);
                     //navMeshAgent.speed = 4;
                 }
-            }
+            }//비조준 상태시 전방 주시
             else
             {
                 thirdPersonCharacter.Move(desiredVelocity, false, false);
@@ -245,7 +265,7 @@ namespace WoosanStudio.ZombieShooter
         /// <summary>
         /// 정면을 볼지 타겟을 볼지 결정
         /// </summary>
-        void LookAtTarget() 
+        void LookAtStateControl() 
         {
             //Debug.Log(zombies.Count);
             //좀비가 있다면
