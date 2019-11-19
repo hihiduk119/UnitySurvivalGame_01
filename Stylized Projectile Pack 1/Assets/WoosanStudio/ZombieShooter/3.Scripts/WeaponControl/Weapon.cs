@@ -40,6 +40,10 @@ namespace WoosanStudio.ZombieShooter
         public float demage;
         //projectileActor에서 사용된 projectile의 인덱스
         public int projectileIndex;
+        //탄창 최대 용량
+        public int bulletMagazineMaxCount;
+        //추가적으로 속성이 업데이트 됬을때를 위한 데이터 셋
+        Dictionary<string, string> extraProperty;
 
         public object Clone()
         {

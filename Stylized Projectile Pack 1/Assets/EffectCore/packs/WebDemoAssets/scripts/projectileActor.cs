@@ -117,8 +117,10 @@ public class projectileActor : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+        //test code [사격중간에 느려지는 타이밍 발생해서]
+
         //Movement
-        if(Input.GetButton("Horizontal"))
+        if (Input.GetButton("Horizontal"))
         {
             if (Input.GetAxis("Horizontal") < 0)
             {
@@ -135,12 +137,15 @@ public class projectileActor : MonoBehaviour {
         {
             Switch(-1);
         }
-        if (Input.GetButtonDown("Fire2") || Input.GetKeyDown(KeyCode.E))
-        {
-            Switch(1);
-        }
 
-	    if(Input.GetButtonDown("Fire1"))
+        //키버튼 오른쪽 눌려서 발사체 변경된 것을 느려짐 현상이 발생했다고 착각
+        //if (Input.GetButtonDown("Fire2") || Input.GetKeyDown(KeyCode.E))
+        //{
+        //    Switch(1);
+        //}
+
+
+        /*if (Input.GetButtonDown("Fire1"))
         {
             firing = true;
             Fire();
@@ -151,21 +156,22 @@ public class projectileActor : MonoBehaviour {
         {
             firing = false;
             firingTimer = 0;
-        }
+        }*/
 
-        
 
-        if(firing)
-        {
-            firingTimer += Time.deltaTime;
-        }
-	}
+
+    }
 
     //원래는 Update에 있었으나 timeScale싱크 문제로 슬로우 모드에서 타임 스케일을 나눈 값만큼 속도 추가 되어야
     //하는데 씹혀서 들어가는 부분 해결
     //고정 업데이트 부분으로 옮김
     private void FixedUpdate()
     {
+        if (firing)
+        {
+            firingTimer += Time.deltaTime;
+        }
+
         if (bombList[bombType].rapidFire && firing)
         {
             if (firingTimer > bombList[bombType].rapidFireCooldown + rapidFireDelay)

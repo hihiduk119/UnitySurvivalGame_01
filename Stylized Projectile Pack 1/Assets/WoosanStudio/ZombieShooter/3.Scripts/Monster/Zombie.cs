@@ -86,7 +86,7 @@ namespace WoosanStudio.ZombieShooter
             //좀비 죽음
             base.IsAlive = false;
             //현재 좀비의 정보 제공 => 좀비 리스트에서 제거하라고 지시a
-            Character.instance.TargetDead(transform);
+            //Character.instance.TargetDead(transform);
             //데이터상 데드로 변경
             model.isDead = true;
             //레그돌 관련 활성화

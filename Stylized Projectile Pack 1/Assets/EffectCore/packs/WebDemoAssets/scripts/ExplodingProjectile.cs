@@ -43,6 +43,10 @@ public class ExplodingProjectile : MonoBehaviour
             //테그에 ProjectileImpactRoot 있는거 찾T
             ExplodingProjectile.Impact = GameObject.FindGameObjectWithTag("Impact").transform;
         }
+
+        //자동삭제추가 [완전히 사라지지 않는 버그가 있어서 강제로 죽는 루틴 추가]
+        Destroy(this.gameObject, 2f);
+
     }
     //여기까지
 

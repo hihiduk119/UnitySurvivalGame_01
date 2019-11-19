@@ -49,14 +49,14 @@ namespace WoosanStudio.ZombieShooter
         //발사체 관련
         public projectileActor m_projectileActor;
         //현재 사격중인지 아닌지 여부
-        bool firing = false;
+        //bool firing = false;
         bool isReloading = false;
-        Coroutine corFire;
+        //Coroutine corFire;
 
         //현재 설정된 최대 총알수
-        int bulletMagazineMaxCount = 30;
+        //int bulletMagazineMaxCount = 30;
         //현재 남은 총알수
-        int bulletMagazineCount = 0;
+        //int bulletMagazineCount = 0;
 
         //사격시 발생하는 BlobLight
         public GameObject objGunFireBlobLights;
@@ -64,6 +64,7 @@ namespace WoosanStudio.ZombieShooter
         Vector3 tmpPos;
         float distance = 0.25f;
 
+        //코루틴 람다식 형태
         IEnumerator WaitAndDo(float time, Action action)
         {
             yield return new WaitForSeconds(time);
@@ -80,7 +81,7 @@ namespace WoosanStudio.ZombieShooter
             //네비게이션 세팅
             navMeshAgent.updateRotation = false;
 
-            //좀비의 액션에 대한 콜백메서드 세팅a
+            //좀비의 액션에 대한 콜백메서드 세팅
             attackAction = new UnityAction<ZombieKinds>(BeAttackedCallback);
 
             if (Camera.main != null)
@@ -102,138 +103,32 @@ namespace WoosanStudio.ZombieShooter
             //m_projectileActor.Stop();
         }
 
+        /// <summary>
+        /// 모스터에게 공격받았을때 호출
+        /// </summary>
+        /// <param name="zombieKinds"></param>
         public void BeAttackedCallback(ZombieKinds zombieKinds)
         {
-            Debug.Log("좀비에게 공격받음");
-        }
-
-        /// <summary>
-        /// 좀비가 제거 됐을때 호출
-        /// </summary>
-        /// <param name="target">Target.</param>
-        public void TargetDead(Transform target) 
-        {
-            //죽은 넘인지 아닌지 부터 확인 => 죽은 넘이면
-            //좀비가 생존하지 않았다면
-            if (!target.GetComponent<Enemy>().IsAlive)
-            {
-                firing = false;
-                DontFire();
-            }
-
-            //남은 적이 없다면 사격 비활성화
-            if (zombies.Count == 0)
-            {
-                DontFire();
-            }
-
-            //죽은 좀비 찾아서 제거a
-            if (!zombies.Find(value => value.Equals(target.name)))
-            {
-                //있다면 제거
-                int index = zombies.FindIndex(value => value.name.Equals(target.name));
-                zombies.RemoveAt(index);
-            }
-        }
-
-        /// <summary>
-        /// 몬스터가 총 사거리 들어옴
-        /// </summary>
-        /// <param name="target">Target.</param>
-        public void EnterGunRange(Transform target) {
-
-            //리스트에서 기존에 있는지 없는지 확인[없다]
-            if (!zombies.Find(value => value.Equals(target.name))) 
-            {
-                //없다면 추가
-                zombies.Add(target);
-            }
-
-            //Debug.Log("좀비에게 사거리 들어옴  count = " + zombies.Count);
-
-
-            //사격중이 아니었다면
-            if(!firing) {
-                if (corFire != null) { StopCoroutine(corFire); }
-                corFire = StartCoroutine(CorFire());
-                //사격 활성화
-                firing = true;
-            }
-        }
-
-        /// <summary>
-        /// 몬슨터가 총 사거리 벗어남
-        /// </summary>
-        /// <param name="target">Target.</param>
-        public void ExitGunRange(Transform target) {
-
-            //리스트에서 기존에 있는지 없는지 확인
-            if (zombies.Find(value => value.name.Equals(target.name)))
-            {
-                //있다면 제거
-                zombies.RemoveAt(zombies.FindIndex(value => value.name.Equals(target.name)));
-            }
-
-            //Debug.Log("좀비에게 사거리 벗어남  count = " + zombies.Count);
-            //남은 적이 없다면 사격 비활성화
-            if (zombies.Count == 0) {
-                DontFire();
-            }
-        }
-
-        /// <summary>
-        /// 사격 중지
-        /// </summary>
-        void DontFire()
-        {
-            if (corFire != null) { StopCoroutine(corFire); }
-            firing = false;
-        }
-
-        IEnumerator CorFire() {
-            //프로젝타일액터에 기본으로 사용되고 있는 연속 사격 시퀀스 사용할때
-            //m_projectileActor.firing = true;
-            //m_projectileActor.Fire();
-            //사격 딜레이
-            WaitForSeconds delay = new WaitForSeconds(.075f);
-            yield return new WaitForSeconds(0.1f);
-            while (true) {
-                //재장전 중이 아닐때만 사격
-                if(!isReloading) {
-                    //직접 사격 제어 할때
-                    m_projectileActor.Fire();
-                    //총기 화염 표현
-                    this.objGunFireBlobLights.SetActive(true);
-                    StartCoroutine(WaitAndDo(0.07f, () => {
-                        this.objGunFireBlobLights.SetActive(false);
-                    }));
-
-
-                    AudioManager.instance.GunShot(SoundOneshot.RifleOne_00);
-                    bulletMagazineCount++;
-                    if(bulletMagazineCount >= bulletMagazineMaxCount) {
-                        Reload();
-                        bulletMagazineCount = 0;
-                    }
-                }
-                yield return delay;
-
-            }
+            Debug.Log("몬스터에게 공격받음");
         }
 
         private void FixedUpdate()
         {
-            //타겟을 바라봅니다.
+            //정면을 볼지 타겟을 볼지 결정
             LookAtTarget();
+            //이동
             Move();
 
-            //Test code
+            //Test code [Test 1]
             if (Input.GetKeyDown(KeyCode.R))
             {
                 Reload();
             }
         }
 
+        /// <summary>
+        /// 재장전 애니메이션 실행
+        /// </summary>
         void Reload()
         {
             animator.SetTrigger("Reload");
@@ -241,11 +136,14 @@ namespace WoosanStudio.ZombieShooter
             isReloading = true;
         }
 
-        //재장전 완료시
+        //재장전 애니메이션 완료시 호출
         public void ReloadEndCallback() {
             isReloading = false;
         }
 
+        /// <summary>
+        /// 이동 부분
+        /// </summary>
         private void Move()
         {
             //실제 조이스틱 값 가져오는 부분
@@ -280,6 +178,8 @@ namespace WoosanStudio.ZombieShooter
             //해당 지점으로 이동시키는 코드 => 조이스틱에 의 움직인 오브젝트임
             //navMeshAgent.SetDestination(joystickPivot.transform.position);
             navMeshAgent.destination = transform.position + desiredVelocity;
+            //navMeshAgent.Move(joystickPivot.transform.position);
+            //navMeshAgent.SetDestination(joystickPivot.transform.position);
 
 
             //조준 됐다면 타겟을 바라봐야함
@@ -317,6 +217,9 @@ namespace WoosanStudio.ZombieShooter
             }
         }
 
+        /// <summary>
+        /// 정면을 볼지 타겟을 볼지 결정
+        /// </summary>
         void LookAtTarget() 
         {
             //Debug.Log(zombies.Count);
@@ -333,49 +236,6 @@ namespace WoosanStudio.ZombieShooter
                 aimMaker.gameObject.SetActive(false);
             }
         }
-
-        /*
-        IEnumerator CorMoveJoystickPivot()
-        {
-            WaitForSeconds WFS = new WaitForSeconds(0.1f);
-            while(true)
-            {
-                //실제 조이스틱 값 가져오는 부분
-                horizon = UltimateJoystick.GetHorizontalAxis("Move");
-                vertical = UltimateJoystick.GetVerticalAxis("Move");
-
-                //Debug.Log("h = " + vertical + " v = " + vertical);
-
-                if (cam != null)
-                {
-                    //카메라 기준으로 조이스틱 방향성 바꿔줌
-                    camForward = Vector3.Scale(cam.forward, new Vector3(1, 0, 1)).normalized;
-                    desiredVelocity = vertical * camForward + horizon * cam.right;
-                }
-                else
-                {
-                    //카메라가 없다면 기본 방향
-                    desiredVelocity = vertical * Vector3.forward + horizon * Vector3.right;
-                }
-                //실제 이동을 담당
-                //navMeshAgent.destination = transform.position + desiredVelocity;
-
-
-                //플레이어의 좌표와 왜곡 보정계산된 방향 가속도를 현재 좌표에 적용.
-                tmpPos = this.transform.localPosition;
-                tmpPos.z += desiredVelocity.z * distance;
-                tmpPos.x += desiredVelocity.x * distance;
-
-                //러프를 걸 타겟
-                joystickPivot.transform.localPosition = tmpPos;
-
-                //해당 지점으로 이동시키는 코드 => 조이스틱에 의 움직인 오브젝트임
-                navMeshAgent.SetDestination(joystickPivot.transform.position);
-
-                yield return WFS;
-            }
-        }
-        */
 
 
         void OnGUI()
