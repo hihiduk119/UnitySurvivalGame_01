@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Woosan.Common;
 
 using UnityEngine.UI;
 using UnityEngine.Audio;
@@ -10,6 +9,8 @@ using UnityEditor;
 
 using DG.Tweening;
 
+using WoosanStudio.Common;
+
 public enum SoundOneshot {
 	RifleOne_00,
     RifleOne_Reload_00,
@@ -18,6 +19,7 @@ public enum SoundOneshot {
 public enum SoundLoop {
     LetsRock = 0,
 }
+
 
 
 public class AudioManager : MonoSingleton<AudioManager> {

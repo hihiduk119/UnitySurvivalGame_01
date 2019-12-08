@@ -40,8 +40,7 @@ namespace WoosanStudio.ZombieShooter
         public UnityAction<ZombieKinds> attackAction;
         //사거리에 들어온 좀비 리스트
         List<Transform> zombies = new List<Transform>();
-        //사거리 관련 
-        public Range range;
+
         //에니메이션 컨트롤
         public Animator animator;
 
@@ -55,7 +54,7 @@ namespace WoosanStudio.ZombieShooter
         public GameObject joystickPivot;
 
         //사격 컨트롤러
-        public FireController fireController;
+        public FireActor fireActor;
 
         float horizon;
         float vertical;
@@ -72,6 +71,14 @@ namespace WoosanStudio.ZombieShooter
         //bool firing = false;
         bool isReloading = false;
         //Coroutine corFire;
+
+        [Header("[Look At할 타겟들]")]
+        public List<Transform> targets = new List<Transform>();
+        [Header("[Look At 타겟]")]
+        public Transform fireTarget = null;
+
+
+        public AimMaker aimMaker;
 
         //현재 설정된 최대 총알수
         //int bulletMagazineMaxCount = 30;
@@ -156,9 +163,7 @@ namespace WoosanStudio.ZombieShooter
         /// </summary>
         private void Update()
         {
-            //정면을 볼지 타겟을 볼지 결정
-            LookAtStateControl();
-            //앞으로 걷을지 뒷걸을 칠지 결정
+            //앞으로 걸을지 뒷걸을 칠지 결정
             MoveStateControl();
 
             //Test code [Test 1]
@@ -174,7 +179,7 @@ namespace WoosanStudio.ZombieShooter
         void Reload()
         {
             animator.SetTrigger("Reload");
-            AudioManager.instance.OneShot(SoundOneshot.RifleOne_Reload_00);
+            AudioManager.Instance.OneShot(SoundOneshot.RifleOne_Reload_00);
             isReloading = true;
         }
 
@@ -214,10 +219,14 @@ namespace WoosanStudio.ZombieShooter
             //해당 지점으로 이동시키는 코드 => 조이스틱에 의 움직인 오브젝트임
             //navMeshAgent.SetDestination(joystickPivot.transform.position);
 
-            //조준 됐다면 타겟을 바라봐야함
+            //정면을 볼지 타겟을 볼지 결정
+            aimed = AimTarget();
+
+            //조준 됐다면 캐릭터의 포지션을 타겟을 바라보게 함.
             if (aimed)
             {
-                Vector3 look = zombies[0].position - transform.position;
+                //Vector3 look = zombies[0].position - transform.position;
+                Vector3 look = fireTarget.position - transform.position;
                 look = look.normalized;
 
                 //비활성화라면 활성화
@@ -227,7 +236,7 @@ namespace WoosanStudio.ZombieShooter
                 //}
                 ////조준된 좀비에 에임 활성화
                 //aimMaker.SetValue(zombies[0], ZombieKinds.WeakZombie);
-                //Debug.Log("look!");
+                
                 //가상패드 인식이 없을때 그냥 서서 총쏘는 애니메이션
                 if (horizon == 0 && vertical == 0)
                 {
@@ -239,8 +248,6 @@ namespace WoosanStudio.ZombieShooter
                 {//가상패드 인식이 있을때는 걸어다니며 슈팅a
                     //애니메이션 움직임만 담당 [회전 포함]
                     thirdPersonCharacter.Move(look, false, false);
-                    //Debug.Log("x = " + look.x +"  z = " + look.z);
-                    //navMeshAgent.speed = 4;
                 }
             }//비조준 상태시 전방 주시
             else
@@ -252,23 +259,75 @@ namespace WoosanStudio.ZombieShooter
         /// <summary>
         /// 정면을 볼지 타겟을 볼지 결정
         /// </summary>
-        void LookAtStateControl() 
+        bool AimTarget() 
         {
-            //Debug.Log(zombies.Count);
-            //좀비가 있다면
-            if(zombies.Count > 0) {
+
+            //Debug.Log("["+this.name+"] 타겟 수 = " + targets.Count);
+
+            //쳐다볼 타겟이 존재한다
+            if (targets.Count > 0)
+            {
+                //에니메이션 상태를 조준상태로 변경
                 animator.SetBool("Aimed", true);
                 aimed = true;
-            } else {
+
+                //쳐다볼 타겟 세팅하기 => 가장 가까운 타겟 가져오기
+                fireTarget = WoosanStudio.Common.TargetUtililty.GetNearestTarget(targets, transform);
+            } else
+            {
+                //에니메이션 상태를 비조준상태로 변경
                 animator.SetBool("Aimed", false);
                 aimed = false;
+            }
+
+            return aimed;
+ 
+            //Debug.Log(zombies.Count);
+            //좀비가 있다면
+            /*if(zombies.Count > 0) {
+                
+            } else {
+                
 
                 //에임 비활성화 시키고 나에게로 가져오기
                 //aimMaker.SetValue(transform, ZombieKinds.WeakZombie);
                 //aimMaker.gameObject.SetActive(false);
+            }*/
+        }
+
+
+
+        //========================[Range에서 받은 타겟 컨트롤]========================
+
+
+
+        /// <summary>
+        /// 타겟 추가
+        /// </summary>
+        /// <param name="target">추가할 타겟</param>
+        public void AddTarget(Transform target)
+        {
+            //리스트에서 기존에 있는지 없는지 확인[없다]
+            if (!targets.Find(value => value.Equals(target.name)))
+            {
+                //없다면 추가
+                targets.Add(target);
             }
         }
 
+        /// <summary>
+        /// 타겟 제거
+        /// </summary>
+        /// <param name="target">제거할 타겟</param>
+        public void RemoveTarget(Transform target)
+        {
+            //리스트에서 기존에 있는지 없는지 확인
+            if (targets.Find(value => value.name.Equals(target.name)))
+            {
+                //있다면 제거
+                targets.RemoveAt(targets.FindIndex(value => value.name.Equals(target.name)));
+            }
+        }
 
         //void OnGUI()
         //{

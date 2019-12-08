@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-using DG.Tweening;
+using WoosanStudio.Common;
 
 namespace WoosanStudio.ZombieShooter
 {
@@ -11,8 +13,6 @@ namespace WoosanStudio.ZombieShooter
         public TransformUnityEvent triggerEnterEvent = new TransformUnityEvent();
         //exit 이벤트
         public TransformUnityEvent triggerExitEvent = new TransformUnityEvent();
-        //
-        //public UnityAction detectedAction;
 
         //주변에 인식 부분
         private SphereCollider coll;
@@ -34,12 +34,6 @@ namespace WoosanStudio.ZombieShooter
             //Blink();
         }
 
-        //해당 영역 깜빡이는 부분
-        //void Blink() 
-        //{
-        //    material.DOFade(0.05f, "_TintColor", 1f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutQuad);
-        //}
-
         //실제 View 에서 보이는 사거리 세팅
         public void SetRange(float radius)
         {
@@ -50,9 +44,16 @@ namespace WoosanStudio.ZombieShooter
         //Enter 이벤트 발생
         private void OnTriggerEnter(Collider other)
         {
+            //레인지 스크립트 디버그 활성화
+            if (GameManager.Instance.onDebug.OnDebugForRange)
+            {
+                Debug.Log("[OnTriggerEnter] name =  " + other.name);
+            }
+
+            //레이어가 "좀비"
             if (other.gameObject.layer == LayerMask.NameToLayer("zombie"))
             {
-                //Debug.Log("OnTriggerEnter");
+                //이벤트 발생
                 this.triggerEnterEvent.Invoke(other.transform);
             }
         }
@@ -60,9 +61,16 @@ namespace WoosanStudio.ZombieShooter
         //Exit 이벤트 발생
         private void OnTriggerExit(Collider other)
         {
-            //Debug.Log("OnTriggerExit");
+            //레인지 스크립트 디버그 활성화
+            if (GameManager.Instance.onDebug.OnDebugForRange)
+            {
+                Debug.Log("[nTriggerExit] name =  " + other.name);
+            }
+
+            //레이어가 "좀비"
             if (other.gameObject.layer == LayerMask.NameToLayer("zombie"))
             {
+                //이벤트 발생
                 this.triggerExitEvent.Invoke(other.transform);
             }
         }

@@ -46,7 +46,7 @@ namespace WoosanStudio.Common
             }
 
             if(Input.GetKeyDown(KeyCode.P)) {
-                AudioManager.instance.MusicLoop(SoundLoop.LetsRock);
+                AudioManager.Instance.MusicLoop(SoundLoop.LetsRock);
             }
         }
     }

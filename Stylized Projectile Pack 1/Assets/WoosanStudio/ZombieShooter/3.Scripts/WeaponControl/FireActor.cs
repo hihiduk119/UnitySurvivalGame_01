@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 using UnityEngine.Events;
+using WoosanStudio.Common;
 
 namespace WoosanStudio.ZombieShooter
 {
@@ -10,18 +12,8 @@ namespace WoosanStudio.ZombieShooter
     /// 모든 사격 관련 부분을 컨트롤
     /// 실제 발사체 컨트롤도 여기서함.
     /// </summary>
-    public class FireController : MonoBehaviour
+    public class FireActor : MonoBehaviour 
     {
-        /// <summary>
-        /// 사격 우선순위
-        /// </summary>
-        public enum Priority
-        {
-            LowHealth,      //낯은 체력 우선
-            MinDistance,    //최소 거리 우선
-            MaxDistance,    //최대 거리 우선
-        }
-
         /// <summary>
         /// 사격 상태
         /// </summary>
@@ -33,7 +25,7 @@ namespace WoosanStudio.ZombieShooter
             CasingJam,  //탄 걸림
         }
 
-        [Header("[몬스터 타겟들]")]
+        [Header("[사격할 타겟들]")]
         public List<Transform> targets = new List<Transform>();
         [Header ("[플레이어 트렌스폼]")]
         public Transform player;
@@ -55,12 +47,14 @@ namespace WoosanStudio.ZombieShooter
         public UnityEvent targetingEvent;
 
         //캐쉬용
-        GameObject target;
+        GameObject fireTarget;
+
+
 
         private void Start()
         {
             //코루틴으로 업데이트를 대신한다
-            corTargetCheck = StartCoroutine(CorTargetCheck());
+            //corTargetCheck = StartCoroutine(CorTargetCheck());
         }
 
         /// <summary>
@@ -88,18 +82,9 @@ namespace WoosanStudio.ZombieShooter
             return false;
         }
 
-        /// <summary>
-        /// 최우선 타겟을 가져온다
-        /// </summary>
-        /// <returns></returns>
-        GameObject FindPriorityTarget()
-        {
-            return null;
-        }
-
 
         /// <summary>
-        /// 몬스터 사격
+        /// 해당 타겟에 사격
         /// </summary>
         void Fire(GameObject target)
         {
@@ -180,16 +165,21 @@ namespace WoosanStudio.ZombieShooter
                     aimMaker.SetValue(currentTarget);
                 }
 
-
+                Debug.Log("0");
                 //현재 사격 중인 확인
-                if (!IsFire()) break;
+                //if (!IsFire()) break;
                 //사격 가능 여부 확인
-                if (!FireAble()) break;
-                //사격 우선 순위 타겟 확인
-                target = FindPriorityTarget();
+                //if (!FireAble()) break;
+                //제일 가까운 오브젝트
+                fireTarget = TargetUtililty.GetNearestTarget(targets,transform).gameObject;
+
+                if (fireTarget != null)
+                {
+                    Debug.Log("[" + this.name + "]" + fireTarget.name);
+                }
 
                 //우선 순위 타겟에 사격
-                Fire(target);
+                Fire(fireTarget);
 
                 //매 프레임 사격 가능 여부를 확인
                 //FireControl();
@@ -199,14 +189,26 @@ namespace WoosanStudio.ZombieShooter
         }
 
         //타겟 추가 됫는지 아닌지 확인용 테스트 코드
-        private void Update()
+        /*private void Update()
         {
-            Debug.Log("타겟 수 = " + targets.Count);
-            //타겟에 저장된 모든 오브젝트에 라인그려서 표시
-            for(int index = 0;index < targets.Count ;index++)
+            //디버그용 타겟 체커
+            if (GameManager.Instance.onDebug.OnDebugFireActor)
             {
-                Debug.DrawLine(transform.position, targets[index].transform.position, Color.red);
+                if (targets.Count == 0) return;
+
+                if(GameManager.Instance.onDebug.OnDebugFireActor)
+                {
+                    //Debug.Log("[" + this.name + "] 타겟 수 = " + targets.Count);
+                }
+                
+                //타겟에 저장된 모든 오브젝트에 라인그려서 표시
+                for (int index = 0; index < targets.Count; index++)
+                {
+                    Debug.DrawLine(transform.position, targets[index].transform.position, Color.red);
+                }
+
+                Debug.DrawLine(transform.position, TargetUtililty.GetNearestTarget(targets, transform).position, Color.yellow);
             }
-        }
+        }*/
     }
 }

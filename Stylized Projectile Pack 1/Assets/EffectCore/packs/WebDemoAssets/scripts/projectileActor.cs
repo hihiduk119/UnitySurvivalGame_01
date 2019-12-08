@@ -145,7 +145,7 @@ public class projectileActor : MonoBehaviour {
         //}
 
         //마우스 테스트시 사용하기 위한 테스트코드
-        if (UseMouseClick)
+        /*if (UseMouseClick)
         {
             if (Input.GetButtonDown("Fire1"))
             {
@@ -159,7 +159,7 @@ public class projectileActor : MonoBehaviour {
                 firing = false;
                 firingTimer = 0;
             }
-        }
+        }*/
     }
 
     //이 부분 다시 확인해서 왜그런지 이유 정확하게 찾아야 .
