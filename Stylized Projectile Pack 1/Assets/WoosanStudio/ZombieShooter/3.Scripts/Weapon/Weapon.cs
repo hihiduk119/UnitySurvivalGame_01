@@ -9,7 +9,7 @@ namespace WoosanStudio.ZombieShooter
     /// 무기 데이터를 정의함
     /// </summary>
     [Serializable]
-    public class Weapon : ICloneable
+    public class Weapon
     {
         /// <summary>
         /// 속
@@ -40,15 +40,23 @@ namespace WoosanStudio.ZombieShooter
         public float demage;
         //projectileActor에서 사용된 projectile의 인덱스
         public int projectileIndex;
-        //탄창 최대 용량
-        public int bulletMagazineMaxCount;
+
+        private BulletClip bulletClip;
+
+
         //추가적으로 속성이 업데이트 됬을때를 위한 데이터 셋
         Dictionary<string, string> extraProperty;
 
-        public object Clone()
+        public Weapon(string name, int id, float demage, int projectileIndex, BulletClip bulletClip)
         {
-            return this.MemberwiseClone();
+            this.name = name;
+            this.id = id;
+            this.demage = demage;
+            this.projectileIndex = projectileIndex;
+            this.bulletClip = bulletClip;
         }
+
+        public BulletClip BulletClip { get => bulletClip; set => bulletClip = value; }
     }
 
     [Serializable]

@@ -14,12 +14,12 @@ namespace WoosanStudio.ZombieShooter
         public Weapons weapons = new Weapons();
 
         [Header("[추가할 무기 세팅]")]
-        public Weapon weapon = new Weapon();
+        public Weapon weapon = new Weapon("권총",1,10f,0,new BulletClip(10));
 
         //무기 추가
         public void AddWeapon()
         {
-            weapons.weapons.Add((Weapon)weapon.Clone());
+         //   weapons.weapons.Add((Weapon)weapon.Clone());
         }
 
         /// <summary>

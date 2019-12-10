@@ -73,7 +73,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
         {
             this.target = target;
             //타겟 설정시 리스너에 콜벡 넣어주기
-            attackEvent.AddListener(target.GetComponent<Character>().attackAction);
+            attackEvent.AddListener(target.GetComponent<PlayerActor>().attackAction);
         }
     }
 }

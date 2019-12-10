@@ -1,51 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
-
-using UnityStandardAssets.Characters.ThirdPerson;
-using UnityEngine.AI;
 
 using System;
 
-using WoosanStudio.Common;
+using UnityStandardAssets.Characters.ThirdPerson;
 
 namespace WoosanStudio.ZombieShooter
 {
-    /// <summary>
-    /// 해당 컨트롤러는 움직임만 담
-    /// </summary>
-    public class Character : MonoSingleton<Character>
+    public class PlayerMoveActor : MonoBehaviour
     {
-        /// <summary>
-        /// 움직임 상태
-        /// </summary>
-        enum MoveState
-        {
-            JoystickDirection,      //조이스틱 방향 주시
-            LookAtTarget,           //타겟 주시
-        }
-
-        /// <summary>
-        /// 가지고 있는 무기 가동 상태
-        /// </summary>
-        enum HasWeaponState
-        {
-            Default,    //기본
-            Shooting,   //사격중
-            Reloading,  //재장전중
-        }
-
-        //좀비의 공격
-        public UnityAction<ZombieKinds> attackAction;
-        //사거리에 들어온 좀비 리스트
-        List<Transform> zombies = new List<Transform>();
-
         //에니메이션 컨트롤
-        public Animator animator;
+        //public Animator animator;
 
         //네비메쉬 [실제 이동 담당]
-        public NavMeshAgent navMeshAgent;
+        public UnityEngine.AI.NavMeshAgent navMeshAgent;
 
         //서드퍼슨 컨트롤 [ 애니메이션만 담당 , 회전도 담 당]
         public ThirdPersonCharacter thirdPersonCharacter;
@@ -54,39 +23,22 @@ namespace WoosanStudio.ZombieShooter
         public GameObject joystickPivot;
 
         //사격 컨트롤러
-        public FireActor fireActor;
+        //public FireActor fireActor;
 
         float horizon;
         float vertical;
         Vector3 desiredVelocity;
+
         //캠의 방향으로 조이스틱 조정하기 위해 사용
-        private Transform cam;                  
+        private Transform cam;
         private Vector3 camForward;
         //움직임 관련
         public bool aimed = false;
-        //조준이 되는 에임 마커
-        //public AimMaker aimMaker;
 
-        //현재 사격중인지 아닌지 여부
-        //bool firing = false;
-        bool isReloading = false;
-        //Coroutine corFire;
-
-        [Header("[Look At할 타겟들]")]
-        public List<Transform> targets = new List<Transform>();
-        [Header("[Look At 타겟]")]
-        public Transform fireTarget = null;
-
-
-        public AimMaker aimMaker;
-
-        //현재 설정된 최대 총알수
-        //int bulletMagazineMaxCount = 30;
-        //현재 남은 총알수
-        //int bulletMagazineCount = 0;
-        //임시 사용
-        Vector3 tmpPos;
-        float distance = 0.25f;
+        //[Header("[Look At할 타겟들]")]
+        private List<Transform> targets = new List<Transform>();
+        //[Header("[Look At 타겟]")]
+        private Transform fireTarget = null;
 
         //코루틴 람다식 형태
         IEnumerator WaitAndDo(float time, Action action)
@@ -100,15 +52,10 @@ namespace WoosanStudio.ZombieShooter
             //네비게이션 세팅
             navMeshAgent.updateRotation = false;
 
-            //좀비의 액션에 대한 콜백메서드 세팅
-            attackAction = new UnityAction<ZombieKinds>(BeAttackedCallback);
-
             if (Camera.main != null)
             {
                 cam = Camera.main.transform;
             }
-
-            //StartCoroutine(CorMoveJoystickPivot());
 
             //NavMeshAgent를 사용하여 실제 조이스틱 값을 사용해서 움직이는 부분
             StartCoroutine(CorNavMove());
@@ -123,7 +70,7 @@ namespace WoosanStudio.ZombieShooter
         {
             //값으 높을수록 좋다. 퍼포먼스 생각하면 값 세팅
             WaitForSeconds WFS = new WaitForSeconds(0.1f);
-            while(true)
+            while (true)
             {
                 //실제 조이스틱 값 가져오는 부분
                 horizon = UltimateJoystick.GetHorizontalAxis("Move");
@@ -150,42 +97,12 @@ namespace WoosanStudio.ZombieShooter
         }
 
         /// <summary>
-        /// 모스터에게 공격받았을때 호출
-        /// </summary>
-        /// <param name="zombieKinds"></param>
-        public void BeAttackedCallback(ZombieKinds zombieKinds)
-        {
-            Debug.Log("몬스터에게 공격받음");
-        }
-
-        /// <summary>
         /// FixedUpdate 사용시 부드럽지 않아서 기본 Update사용
         /// </summary>
         private void Update()
         {
             //앞으로 걸을지 뒷걸을 칠지 결정
             MoveStateControl();
-
-            //Test code [Test 1]
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                Reload();
-            }
-        }
-
-        /// <summary>
-        /// 재장전 애니메이션 실행
-        /// </summary>
-        void Reload()
-        {
-            animator.SetTrigger("Reload");
-            AudioManager.Instance.OneShot(SoundOneshot.RifleOne_Reload_00);
-            isReloading = true;
-        }
-
-        //재장전 애니메이션 완료시 호출
-        public void ReloadEndCallback() {
-            isReloading = false;
         }
 
         /// <summary>
@@ -220,12 +137,20 @@ namespace WoosanStudio.ZombieShooter
             //navMeshAgent.SetDestination(joystickPivot.transform.position);
 
             //정면을 볼지 타겟을 볼지 결정
-            aimed = AimTarget();
+            //aimed = AimTarget();
 
             //조준 됐다면 캐릭터의 포지션을 타겟을 바라보게 함.
+            //aimed 값은 PlayerActor 의 이벤트에 의해서 값 설정됨
             if (aimed)
             {
                 //Vector3 look = zombies[0].position - transform.position;
+
+                if (fireTarget == null) {
+                    Debug.Log("[" +this.name+ "] fireTarget 널!!");
+                    return;
+                }
+                
+
                 Vector3 look = fireTarget.position - transform.position;
                 look = look.normalized;
 
@@ -236,7 +161,7 @@ namespace WoosanStudio.ZombieShooter
                 //}
                 ////조준된 좀비에 에임 활성화
                 //aimMaker.SetValue(zombies[0], ZombieKinds.WeakZombie);
-                
+
                 //가상패드 인식이 없을때 그냥 서서 총쏘는 애니메이션
                 if (horizon == 0 && vertical == 0)
                 {
@@ -259,9 +184,8 @@ namespace WoosanStudio.ZombieShooter
         /// <summary>
         /// 정면을 볼지 타겟을 볼지 결정
         /// </summary>
-        bool AimTarget() 
+        /*bool AimTarget()
         {
-
             //Debug.Log("["+this.name+"] 타겟 수 = " + targets.Count);
 
             //쳐다볼 타겟이 존재한다
@@ -273,7 +197,8 @@ namespace WoosanStudio.ZombieShooter
 
                 //쳐다볼 타겟 세팅하기 => 가장 가까운 타겟 가져오기
                 fireTarget = WoosanStudio.Common.TargetUtililty.GetNearestTarget(targets, transform);
-            } else
+            }
+            else
             {
                 //에니메이션 상태를 비조준상태로 변경
                 animator.SetBool("Aimed", false);
@@ -281,19 +206,7 @@ namespace WoosanStudio.ZombieShooter
             }
 
             return aimed;
- 
-            //Debug.Log(zombies.Count);
-            //좀비가 있다면
-            /*if(zombies.Count > 0) {
-                
-            } else {
-                
-
-                //에임 비활성화 시키고 나에게로 가져오기
-                //aimMaker.SetValue(transform, ZombieKinds.WeakZombie);
-                //aimMaker.gameObject.SetActive(false);
-            }*/
-        }
+        }*/
 
 
 
@@ -329,16 +242,22 @@ namespace WoosanStudio.ZombieShooter
             }
         }
 
-        //void OnGUI()
-        //{
-        //    if (GUI.Button(new Rect(0, 0, 200, 150), "사격"))
-        //    {
-        //    }
 
-        //    if (GUI.Button(new Rect(0, 150, 200, 150), "중지"))
-        //    {
 
-        //    }
-        //}
+        //========================[PlayerActor 받은 Aim 상태]========================
+
+
+        public void AimTarget(bool value)
+        {
+            this.aimed = value;
+
+            //쳐다볼 타겟 세팅하기 => 가장 가까운 타겟 가져오기
+            fireTarget = WoosanStudio.Common.TargetUtililty.GetNearestTarget(targets, transform);
+        }
+
+        public void AimRelease(bool value)
+        {
+            this.aimed = value;
+        }
     }
 }

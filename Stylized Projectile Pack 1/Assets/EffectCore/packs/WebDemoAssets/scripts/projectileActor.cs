@@ -72,9 +72,7 @@ public class projectileActor : MonoBehaviour {
     Rigidbody rocketInstance;
 
     //발사 발사시 이벤트 발생
-    public UnityEvent fireEvent = new UnityEvent();
-
-    
+    public UnityEvent fireProjectileEvent = new UnityEvent();
 
     private void Awake()
     {
@@ -100,6 +98,30 @@ public class projectileActor : MonoBehaviour {
             projectileActor.Shell = GameObject.FindGameObjectWithTag("Shell").transform;
         }
     }
+
+    /// <summary>
+    /// 사격 시작
+    /// </summary>
+    public void StartFire()
+    {
+        if(!firing)
+        {
+            firing = true;
+            Fire();
+        }
+    }
+
+    /// <summary>
+    /// 사격 중지
+    /// </summary>
+    public void StopFire()
+    {
+        if (firing)
+        {
+            firing = false;
+            firingTimer = 0;
+        }
+    }
     //여기까지
 
     // Use this for initialization
@@ -117,8 +139,6 @@ public class projectileActor : MonoBehaviour {
 	
 	void Update ()
     {
-        //test code [사격중간에 느려지는 타이밍 발생해서]
-
         //Movement
         if (Input.GetButton("Horizontal"))
         {
@@ -204,7 +224,7 @@ public class projectileActor : MonoBehaviour {
     public void Fire()
     {
         //사격 이벤트 발사
-        fireEvent.Invoke();
+        fireProjectileEvent.Invoke();
 
         //카메라 흔들기
         if (CameraShake)
