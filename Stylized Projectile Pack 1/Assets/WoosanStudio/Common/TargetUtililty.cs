@@ -25,8 +25,7 @@ namespace WoosanStudio.Common
 
             float minDistance = distanceList.Min();
 
-
-            Debug.Log("[TargetUtililty]" + targets[distanceList.FindIndex(value => value.Equals(minDistance))].name);
+            //Debug.Log("[TargetUtililty]" + targets[distanceList.FindIndex(value => value.Equals(minDistance))].name);
 
             return targets[distanceList.FindIndex(value => value.Equals(minDistance))];
         }

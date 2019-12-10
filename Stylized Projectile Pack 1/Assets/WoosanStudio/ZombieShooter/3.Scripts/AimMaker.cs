@@ -23,10 +23,6 @@ namespace WoosanStudio.ZombieShooter
         [Header("[조준된 타겟]")]
         public Transform aimedTarget = null;
 
-        [Header("[조준된 타겟]")]
-        [HideInInspector]
-        //public Transform previousAimedTarget = null;
-
         //실제 타겟 오브젝트
         public Transform model;
 
@@ -57,20 +53,17 @@ namespace WoosanStudio.ZombieShooter
                     //가장 가까운 타겟 가져오기
                     aimedTarget = TargetUtililty.GetNearestTarget(targets, transform);
 
-                    if (aimedTarget != null)
-                    {
-                        Debug.Log("[" + this.name + "]" + aimedTarget.name);
-                    }
+                    //if (aimedTarget != null)
+                    //{
+                    //    Debug.Log("[" + this.name + "]" + aimedTarget.name);
+                    //}
 
                     //활성화
                     model.gameObject.SetActive(true);
                     //타겟 마커 세팅
                     SetValue(aimedTarget);
 
-                    /*if (!aimedTarget.Equals(previousAimedTarget))
-                    {
-                        previousAimedTarget = aimedTarget;
-                    }*/
+                    
                 } else
                 {
                     //비활성화
@@ -78,8 +71,6 @@ namespace WoosanStudio.ZombieShooter
 
                     aimedTarget = null;
                 }
-
-                
 
                 yield return WFS;
             }
