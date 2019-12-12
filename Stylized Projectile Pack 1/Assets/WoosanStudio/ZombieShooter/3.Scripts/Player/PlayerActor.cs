@@ -54,14 +54,21 @@ namespace WoosanStudio.ZombieShooter
         bool aimed = false;
         //현재 리로딩 중
         bool isReloading = false;
-        
+
+        //조준중
+        bool aimDone = false;
 
         //[Header("[Look At할 타겟들]")]
         private List<Transform> targets = new List<Transform>();
         //[Header("[Look At 타겟]")]
         private Transform fireTarget = null;
+        private Transform preFireTarget = null;
 
         private PlayerActionState playerActionState;
+
+        //캐쉬용 [CheckAimDone()]에서 사용
+        private RaycastHit hit;
+        private int layerMask = 1 << 8;
 
         //코루틴 람다식 형태
         IEnumerator WaitAndDo(float time, Action action)
@@ -96,8 +103,32 @@ namespace WoosanStudio.ZombieShooter
                 Reload();
             }
 
+            //레이를 사용하여 타겟 조준이 완전히 완료 할때를 체크
+            CheckAimDone();
             //조준할 타겟이 있는지 없는지 확인.
             CheckAimTarget();
+        }
+
+        /// <summary>
+        ///레이를 사용하여 조준이 완전히 완료 할때를 체크
+        ///현재 미완성
+        /// </summary>
+        void CheckAimDone()
+        {
+            layerMask = ~layerMask;
+
+            if (Physics.Raycast(transform.position + new Vector3(0,0.75f,0), transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask))
+            {
+                Debug.DrawRay(transform.position + new Vector3(0, 0.75f, 0), transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+                //Debug.Log("Did Hit");
+                aimDone = true;
+            }
+            else
+            {
+                Debug.DrawRay(transform.position + new Vector3(0, 0.75f, 0), transform.TransformDirection(Vector3.forward) * 1000, Color.white);
+                //Debug.Log("Did not Hit");
+                aimDone = false;
+            }
         }
 
         /// <summary>
@@ -170,25 +201,43 @@ namespace WoosanStudio.ZombieShooter
                 //쳐다볼 타겟 세팅하기 => 가장 가까운 타겟 가져오기
                 fireTarget = WoosanStudio.Common.TargetUtililty.GetNearestTarget(targets, transform);
 
+                //이전에 타겟이 지금것과 같다면 타겟 조준 안함
+                if (preFireTarget == fireTarget) return;
+
                 //타겟 조준 이벤트 발생
                 aimTargetEvent.Invoke(aimed);
 
                 //리로딩 중이 아닐때
-                if(!isReloading)
+                if (!isReloading)
                 {
                     //사격 이벤트 발생
                     startFireEvent.Invoke();
                 }
+
+                preFireTarget = fireTarget;
+
+                Debug.Log("조준");
             }
             else
             {
+                //이미 한번 해제 이벤트가 있어 났다면
+                if (!aimed) return;
+
                 aimed = false;
                 //조준 해제 이벤트 발생
-                aimReleaseEvent.Invoke(aimed);
+                aimReleaseEvent.Invoke(aimed); 
 
-                //사격 이벤트 발생
+                //사격 중지 이벤트 발생
                 stopFireEvent.Invoke();
+
+                Debug.Log("조준해제");
             }
+
+            //리로딩 상태
+            //삽탄 상태
+            ///조준 상태
+            ////완전한 조준이 된상태
+            ///비조준 상태
         }
 
         //void OnGUI()
